@@ -1,0 +1,41 @@
+﻿@page "/RecipeDetails/{Id:int}"
+@inherits RecipeDetailsBase
+
+@if (Recipe == null && ErrorMessage == null)
+{
+	<DisplaySpinner />
+}
+else if (ErrorMessage != null)
+{
+	<DisplayError ErrorMessage="@ErrorMessage"></DisplayError>
+}
+else
+{
+	<h3 class="mb-5">@Recipe.Title</h3>
+	<div class="row">
+		<div class="col-md-4">
+			<h3>Ingridients: </h3>
+			@foreach (IngredientDto ingredient in Recipe.Ingredients)
+			{
+				<p>@GetIngredientDetails(ingredient)</p>
+			}
+		</div>
+		<div class="col-md-6">
+			<p class="mb-4">
+				<p><b>Notes:</b></p>
+					@Recipe.Notes
+				</p>
+			<p class="mb-4">
+				<b>Category: </b>
+					@Recipe.CategoryName</p>
+			<p class="mb-4">
+				<b>Created: </b>
+				@Recipe.RecipeCreated.ToString("MM/dd/yyyy")
+			</p>
+			<p class="mb-4">
+				<b>Source: </b>
+					@Recipe.Source				
+			</p>
+		</div>
+	</div>
+}

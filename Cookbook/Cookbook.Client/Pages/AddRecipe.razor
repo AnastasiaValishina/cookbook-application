@@ -1,0 +1,49 @@
+﻿@page "/AddRecipe"
+@inherits AddRecipeBase
+
+<h3>AddRecipe</h3>
+
+<div>
+	<label for="title">Title:</label>
+	<input type="text" id="title" name="title" @bind="@Title" required>
+</div>
+<br>
+
+<div>
+	<p>Ingredients:</p>
+	<AddNewIngredient />
+</div> 
+<br>
+
+<div>
+	<label for="notes">Notes:</label>
+	<input type="text" id="notes" name="notes" @bind="@Notes">
+</div>
+<br>
+
+<div>
+	<label for="category">Category:</label>
+	<input type="text" id="category" name="category" @bind="@CategoryId">
+</div>
+<br>
+
+<div>
+	<label for="source">Source:</label>
+	<input type="text" id="source" name="source" @bind="@Source">
+</div>
+<br>
+
+
+<div>
+	<button class="btn btn-success"
+			@onclick="() => (AddRecipe_Click(new RecipeToAddDto {
+					Title = Title,
+					Notes = Notes,
+					CategoryId = CategoryId,
+					Ingredients	= Ingredients,
+					Source = Source
+                }))">
+		<b>Add</b>
+	</button>
+</div>
+ 
