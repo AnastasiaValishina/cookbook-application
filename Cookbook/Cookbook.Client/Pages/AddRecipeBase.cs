@@ -31,5 +31,9 @@ namespace Cookbook.Client.Pages
 		{
 			Ingredients.Add(new IngredientToAddDto { Name = name, Qty = qty, Unit = unit });
 		}
+		protected void AddNewIngredient()
+		{
+			Ingredients.Add(new IngredientToAddDto());
+		}
 	}
 }

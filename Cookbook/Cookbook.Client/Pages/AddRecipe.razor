@@ -8,11 +8,25 @@
 	<input type="text" id="title" name="title" @bind="@Title" required>
 </div>
 <br>
+@foreach (var ing in Ingredients)
+{
+	<div>@ing.Qty&nbsp @ing.Unit&nbsp <b>@ing.Name</b></div>
+}
+<br>
 
 <div>
 	<p>Ingredients:</p>
-	<AddNewIngredient />
-</div> 
+	@foreach (var ingredient in Ingredients)
+	{
+		<div>
+			<input type="text" @bind="@ingredient.Name" placeholder="Ingredient Name" />
+			<input type="number" @bind="@ingredient.Qty" placeholder="Quantity" />
+			<input type="text" @bind="@ingredient.Unit" placeholder="Unit" />
+		</div>
+	}
+	<br>
+	<button @onclick="AddNewIngredient">Add Ingredient</button>
+</div>
 <br>
 
 <div>
