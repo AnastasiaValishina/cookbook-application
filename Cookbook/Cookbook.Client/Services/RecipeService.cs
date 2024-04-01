@@ -69,26 +69,32 @@ namespace Cookbook.Client.Services
 			}
 		}
 
-		public async Task AddRecipeAsync(RecipeToAddDto recipeToAddDto)
+		public async Task<RecipeDto> AddRecipeAsync(RecipeToAddDto recipeToAddDto)
 		{
 			try
 			{
 				var response = await _httpClient.PostAsJsonAsync<RecipeToAddDto>("Recipe/AddRecipeAsync", recipeToAddDto);
 
-				if (!response.IsSuccessStatusCode)
+				if (response.IsSuccessStatusCode)
+				{
+					if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+					{
+						return default(RecipeDto);
+					}
+
+					return await response.Content.ReadFromJsonAsync<RecipeDto>();
+				}
+				else
 				{
 					var message = await response.Content.ReadAsStringAsync();
-			
-					Console.WriteLine($"Error adding recipe: {message}");
-
-					throw new Exception($"Error adding recipe: {message}");
+					throw new Exception($"Http status: {response.StatusCode} Message - {message}");
 				}
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Error adding recipe: {ex.Message}");
+
 				throw;
 			}
-		}
+		}	
 	}
 }
