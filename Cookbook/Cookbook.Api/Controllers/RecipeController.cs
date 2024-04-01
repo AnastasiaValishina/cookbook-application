@@ -175,7 +175,7 @@ namespace Cookbook.Api.Controllers
 				sql += ingridientSql;
 			}
 
-            Console.WriteLine(sql);
+            //Console.WriteLine(sql);
 
 			if (_dapper.ExecuteSql(sql))
 			{

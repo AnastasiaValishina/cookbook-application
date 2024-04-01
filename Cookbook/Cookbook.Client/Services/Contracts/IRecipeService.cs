@@ -6,6 +6,6 @@ namespace Cookbook.Client.Services.Contracts
 	{
 		Task<IEnumerable<RecipeDto>> GetRecipesAsync();
 		Task<RecipeDto> GetRecipeByIdAsync(int id);
-		Task<RecipeDto> AddRecipeAsync(RecipeToAddDto recipeToAddDto);
+		Task AddRecipeAsync(RecipeToAddDto recipeToAddDto);
 	}
 }

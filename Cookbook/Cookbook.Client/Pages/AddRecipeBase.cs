@@ -18,11 +18,11 @@ namespace Cookbook.Client.Pages
 		{
 			try
 			{
-				var recipe = await RecipeService.AddRecipeAsync(recipeToAddDto);
+				await RecipeService.AddRecipeAsync(recipeToAddDto);
 			}
 			catch (Exception ex)
 			{
-
+				Console.WriteLine(ex.Message);
 				throw;
 			}
 		}
