@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Data.Common;
 
 namespace Cookbook.Api.Data
 {
@@ -19,6 +20,7 @@ namespace Cookbook.Api.Data
 			IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING));
 			return dbConnection.Query<T>(sql);
 		}
+
 
 		public T LoadDataSingle<T>(string sql)
 		{
@@ -59,6 +61,14 @@ namespace Cookbook.Api.Data
 			using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING)))
 			{
 				return await dbConnection.ExecuteAsync(sql) > 0;
+			}
+		}
+
+		public async Task<int> ExecuteSqlWithIdAsync(string sql)
+		{
+			using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING)))
+			{
+				return await dbConnection.ExecuteScalarAsync<int>(sql);
 			}
 		}
 	}

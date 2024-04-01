@@ -73,7 +73,7 @@ namespace Cookbook.Client.Services
 		{
 			try
 			{
-				var response = await _httpClient.PostAsJsonAsync<RecipeToAddDto>("Recipe/AddRecipe", recipeToAddDto);
+				var response = await _httpClient.PostAsJsonAsync<RecipeToAddDto>("Recipe/AddRecipeAsync", recipeToAddDto);
 
 				if (!response.IsSuccessStatusCode)
 				{

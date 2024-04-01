@@ -137,8 +137,8 @@ namespace Cookbook.Api.Controllers
 			return recipe;
 		}
 
-		[HttpPost("AddRecipe")]
-		public IActionResult AddRecipe(RecipeToAddDto recipe)
+		[HttpPost("AddRecipeAsync")]
+		public async Task<ActionResult<RecipeDto>> AddRecipeAsync(RecipeToAddDto recipe)
 		{
 			string sql = @"
             INSERT INTO CookbookAppSchema.Recipes (
@@ -149,40 +149,51 @@ namespace Cookbook.Api.Controllers
                 [RecipeCreated],
                 [RecipeUpdated],
                 [Source]
-			) VALUES (" + 101 // this.User.FindFirst("userId")?.Value
+			) 
+				OUTPUT INSERTED.RecipeId
+				VALUES (" + 101 // this.User.FindFirst("userId")?.Value
 				+ ",'" + recipe.Title
 				+ "','" + recipe.Notes
 				+ "', " + recipe.CategoryId
 				+ ", GETDATE(), GETDATE() "
-				+ ", '" + recipe.Source +
-				"');" +
-				"DECLARE @RecipeId INT; SET @RecipeId = SCOPE_IDENTITY();";
+				+ ", '" + recipe.Source + "');";
 
-			foreach (var ingredient in recipe.Ingredients)
-            {
-				string ingridientSql = @"
+			int recipeId = await _dapper.ExecuteSqlWithIdAsync(sql);
+
+			if (recipeId != 0)
+			{
+				foreach (var ingredient in recipe.Ingredients)
+				{
+					string ingredientSql = @"
 					INSERT INTO CookbookAppSchema.Ingredients (
 						[RecipeId],
 						[Name],
 						[Qty],
 						[Unit]
-					) VALUES (@RecipeId" 
-						+ ",'" + ingredient.Name
-						+ "'," + ingredient.Qty
-						+ ", '" + ingredient.Unit
-						+ "')";
+					) VALUES (" + recipeId
+							+ ",'" + ingredient.Name
+							+ "'," + ingredient.Qty
+							+ ", '" + ingredient.Unit
+							+ "')";
 
-				sql += ingridientSql;
+					_dapper.ExecuteSql(ingredientSql);
+				}
+
+				RecipeDto createdRecipe = await GetRecipeByIdAsync(recipeId);
+
+				if (createdRecipe != null)
+				{
+					return Ok(createdRecipe); 
+				}
+				else
+				{
+					return BadRequest("Failed to retrieve created recipe");
+				}
 			}
-
-            //Console.WriteLine(sql);
-
-			if (_dapper.ExecuteSql(sql))
+			else
 			{
-				return Ok();
+				return BadRequest("Failed to add recipe");
 			}
-
-			throw new Exception("Failed to Add Recipe");
 		}
 
 		[HttpDelete("Recipe/{recipeId}")]
