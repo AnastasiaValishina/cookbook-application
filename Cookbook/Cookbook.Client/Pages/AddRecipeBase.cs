@@ -8,6 +8,10 @@ namespace Cookbook.Client.Pages
 	{
 		[Inject]
 		public IRecipeService RecipeService { get; set; }
+		
+		[Inject]
+		public NavigationManager NavigationManager { get; set; }
+
 		protected string Title { get; set; } = "";
 		protected string Notes { get; set; } = "";
 		protected int CategoryId { get; set; }
@@ -18,7 +22,8 @@ namespace Cookbook.Client.Pages
 		{
 			try
 			{
-				var recipe = await RecipeService.AddRecipeAsync(recipeToAddDto);
+				RecipeDto recipe = await RecipeService.AddRecipeAsync(recipeToAddDto);
+				NavigationManager.NavigateTo($"/RecipeDetails/{recipe.RecipeId}");
 			}
 			catch (Exception ex)
 			{
