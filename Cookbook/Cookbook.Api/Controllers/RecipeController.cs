@@ -176,7 +176,7 @@ namespace Cookbook.Api.Controllers
 							+ ", '" + ingredient.Unit
 							+ "')";
 
-					_dapper.ExecuteSql(ingredientSql);
+					await _dapper.ExecuteSqlAsync(ingredientSql);
 				}
 
 				RecipeDto createdRecipe = await GetRecipeByIdAsync(recipeId);
@@ -196,20 +196,33 @@ namespace Cookbook.Api.Controllers
 			}
 		}
 
-		[HttpDelete("Recipe/{recipeId}")]
-		public IActionResult DeleteRecipe(int recipeId)
+		[HttpDelete("DeleteRecipeAsync/{recipeId}")]
+		public async Task<ActionResult<RecipeDto>> DeleteRecipeAsync(int recipeId)
 		{
-			string sql = @"DELETE FROM CookbookAppSchema.Recipes 
-                WHERE RecipeId = " + recipeId.ToString();
-			//+ "AND UserId = " + this.User.FindFirst("userId")?.Value;
-
-
-			if (_dapper.ExecuteSql(sql))
+			try
 			{
-				return Ok();
-			}
+				var recipeToDelete = await GetRecipeByIdAsync(recipeId);
 
-			throw new Exception("Failed to delete post!");
+				if (recipeToDelete != null)
+				{
+					string sql = @"DELETE FROM CookbookAppSchema.Recipes 
+						WHERE RecipeId = " + recipeId.ToString();
+						//+ "AND UserId = " + this.User.FindFirst("userId")?.Value;
+
+					Console.WriteLine(sql);
+
+					if (await _dapper.ExecuteSqlAsync(sql))
+					{
+						return Ok(recipeToDelete);
+					}
+				}
+
+				return NotFound();				
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Failed to delete recipe: {ex.Message}");
+			}
 		}
 	}
 }

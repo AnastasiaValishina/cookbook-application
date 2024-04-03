@@ -1,6 +1,7 @@
 ﻿using Cookbook.Models.Dtos;
 using Cookbook.Client.Services.Contracts;
 using System.Net.Http.Json;
+using System.Net;
 
 namespace Cookbook.Client.Services
 {
@@ -95,6 +96,31 @@ namespace Cookbook.Client.Services
 
 				throw;
 			}
-		}	
+		}
+
+		public async Task<RecipeDto> DeleteRecipe(int id)
+		{
+			try
+			{
+				var response = await _httpClient.DeleteAsync($"Recipe/DeleteRecipeAsync/{id}");
+
+				if (response.IsSuccessStatusCode)
+				{
+					return await response.Content.ReadFromJsonAsync<RecipeDto>();
+				}
+				else if (response.StatusCode == HttpStatusCode.NotFound)
+				{
+					return null;
+				}
+				else
+				{
+					throw new Exception($"Failed to delete recipe. Status code: {response.StatusCode}");
+				}
+			}
+			catch (HttpRequestException ex)
+			{
+				throw new Exception("Failed to communicate with the API.", ex);
+			}
+		}
 	}
 }

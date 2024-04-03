@@ -11,6 +11,9 @@ namespace Cookbook.Client.Pages
 		
 		[Inject]
 		public IRecipeService RecipeService { get; set; }
+
+		[Inject]
+		public NavigationManager NavigationManager { get; set; }
 		public RecipeDto Recipe { get; set; }
 		public string? ErrorMessage { get; set; }
 		protected override async Task OnInitializedAsync()
@@ -27,6 +30,18 @@ namespace Cookbook.Client.Pages
 		protected string GetIngredientDetails(IngredientDto ingredient)
 		{
 			return $"{ingredient.Qty} {ingredient.Unit} {ingredient.Name}";
-		} 
+		}
+		protected async Task DeleteRecipe_Click()
+		{
+			try
+			{
+				await RecipeService.DeleteRecipe(Id);
+				NavigationManager.NavigateTo("/");
+			}
+			catch (Exception ex)
+			{
+				ErrorMessage = ex.Message;
+			}
+		}
 	}
 }

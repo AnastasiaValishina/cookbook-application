@@ -32,10 +32,6 @@ namespace Cookbook.Client.Pages
 			}
 		}
 
-		protected void AddIngredient(string name, int qty, string unit)
-		{
-			Ingredients.Add(new IngredientToAddDto { Name = name, Qty = qty, Unit = unit });
-		}
 		protected void AddNewIngredient()
 		{
 			Ingredients.Add(new IngredientToAddDto());
