@@ -1,6 +1,7 @@
 ﻿using Cookbook.Api.Data;
 using Cookbook.Models.Dtos;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 
 namespace Cookbook.Api.Controllers
 {
@@ -49,7 +50,35 @@ namespace Cookbook.Api.Controllers
 			return recipes;
 		}
 
+		[HttpGet("RecipesBySearchParam/{searchParam}")]
+		public async Task<IEnumerable<RecipeDto>> GetRecipesByUserAsync(string searchParam)
+		{
+			string sql = @"SELECT 
+				[RecipeId],
+                [UserId],
+				[Title],
+				[Notes],
+				[CategoryId],
+				[RecipeCreated],
+				[RecipeUpdated],
+				[Source],
+				[CategoryName] 
+			FROM CookbookAppSchema.Recipes as Recipes
+			INNER JOIN CookbookAppSchema.Categories as Categories
+			ON Recipes.CategoryId = Categories.Id
+                WHERE Title LIKE '%" + searchParam + "%'" +
+					" OR Notes LIKE '%" + searchParam + "%'";
 
+			var recipes = await _dapper.LoadDataAsync<RecipeDto>(sql);
+
+			foreach (var recipe in recipes)
+			{
+				var ingredients = await GetIngredients(recipe.RecipeId);
+				recipe.Ingredients = ingredients.ToList();
+			}
+
+			return recipes;
+		}
 
 		[HttpGet("RecipesByUserAsync/{userId}")]
 		public async Task<IEnumerable<RecipeDto>> GetRecipesByUserAsync(int userId)
@@ -79,22 +108,6 @@ namespace Cookbook.Api.Controllers
 
 			return recipes;
 		}
-
-		/*		[HttpGet("RecipeById/{recipeId}")] 
-				public Recipe GetRecipeById(int recipeId)
-				{
-					string sql = @"SELECT 
-						[Title],
-						[Notes],
-						[CategoryId],
-						[RecipeCreated],
-						[RecipeUpdated],
-						[Source] 
-							FROM CookbookAppSchema.Recipes
-						WHERE RecipeId = " + recipeId.ToString();
-
-					return _dapper.LoadDataSingle<Recipe>(sql);
-				}*/
 
 		[HttpGet("RecipeByIdAsync/{recipeId}")]
 		public async Task<RecipeDto> GetRecipeByIdAsync(int recipeId)
