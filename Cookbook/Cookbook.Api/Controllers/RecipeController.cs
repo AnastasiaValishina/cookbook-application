@@ -53,18 +53,7 @@ namespace Cookbook.Api.Controllers
 			return recipes;
 		}
 
-		private async Task<IEnumerable<IngredientDto>> GetIngredients(int recipeId)
-		{
-			string iSql = @"SELECT 
-						[IngredientId],
-						[Name],
-						[Qty],
-						[Unit] 
-					FROM CookbookAppSchema.Ingredients as Ingredients
-					WHERE RecipeId = " + recipeId;
 
-			return await _dapper.LoadDataAsync<IngredientDto>(iSql);			
-		}
 
 		[HttpGet("RecipesByUserAsync/{userId}")]
 		public async Task<IEnumerable<RecipeDto>> GetRecipesByUserAsync(int userId)
@@ -196,6 +185,61 @@ namespace Cookbook.Api.Controllers
 			}
 		}
 
+		[HttpPut("UpdateAsync")]
+		public async Task<RecipeDto> UpdateAsync(RecipeToEditDto recipeToEdit)
+		{
+			string updateSql = @"UPDATE CookbookAppSchema.Recipes
+				SET Title = '" + recipeToEdit.Title +
+				"', Notes = '" + recipeToEdit.Notes +
+				"', CategoryId = " + recipeToEdit.CategoryId.ToString() +
+				", Source = '" + recipeToEdit.Source +
+				"', RecipeUpdated = GETDATE()" +
+				"WHERE RecipeId = " + recipeToEdit.RecipeId.ToString();
+
+			Console.WriteLine(updateSql);
+
+			await _dapper.ExecuteSqlAsync(updateSql);
+
+			foreach (var ingredient in recipeToEdit.Ingredients)
+			{
+				string ingSql = "SELECT * FROM CookbookAppSchema.Ingredients WHERE IngredientId = " + ingredient.IngredientId.ToString();
+
+				var oldIngedient = await _dapper.LoadDataSingleAsync<IngredientDto>(ingSql);
+
+				if (oldIngedient != null)
+				{
+					string ingredientSql = @"
+						UPDATE CookbookAppSchema.Ingredients 
+							SET Name = '" + ingredient.Name +
+							"', Qty = " + ingredient.Qty +
+							", Unit = '" + ingredient.Unit +
+							"' WHERE IngredientId = " + ingredient.IngredientId.ToString();
+
+					await _dapper.ExecuteSqlAsync(ingredientSql);
+				}
+				else
+				{
+					string ingredientSql = @"
+					INSERT INTO CookbookAppSchema.Ingredients (
+						[RecipeId],
+						[Name],
+						[Qty],
+						[Unit]
+					) VALUES (" + recipeToEdit.RecipeId
+						+ ",'" + ingredient.Name
+						+ "'," + ingredient.Qty
+						+ ", '" + ingredient.Unit
+						+ "')";
+
+					await _dapper.ExecuteSqlAsync(ingredientSql);
+				}
+			}
+
+			var updatedRecipe = await GetRecipeByIdAsync(recipeToEdit.RecipeId);
+
+			return updatedRecipe;
+		}
+
 		[HttpDelete("DeleteRecipeAsync/{recipeId}")]
 		public async Task<ActionResult<RecipeDto>> DeleteRecipeAsync(int recipeId)
 		{
@@ -223,6 +267,19 @@ namespace Cookbook.Api.Controllers
 			{
 				return StatusCode(500, $"Failed to delete recipe: {ex.Message}");
 			}
+		}
+
+		private async Task<IEnumerable<IngredientDto>> GetIngredients(int recipeId) // перенести в хелпер
+		{
+			string iSql = @"SELECT 
+						[IngredientId],
+						[Name],
+						[Qty],
+						[Unit] 
+					FROM CookbookAppSchema.Ingredients as Ingredients
+					WHERE RecipeId = " + recipeId;
+
+			return await _dapper.LoadDataAsync<IngredientDto>(iSql);
 		}
 	}
 }
