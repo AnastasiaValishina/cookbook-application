@@ -1,0 +1,77 @@
+﻿@page "/EditRecipe/{Id:int}"
+@inherits EditRecipeBase
+
+@if (Recipe == null && ErrorMessage == null)
+{
+	<DisplaySpinner />
+}
+else if (ErrorMessage != null)
+{
+	<DisplayError ErrorMessage="@ErrorMessage"></DisplayError>
+}
+else
+{
+	<h3>Edit Recipe</h3>
+
+	<div>
+		<label for="title">Title:</label>
+		<input type="text" id="title" name="title" @bind="@Recipe.Title" required>
+	</div>
+	<br>
+	@foreach (var ingredient in Recipe.Ingredients)
+	{
+		<div>
+			<input type="text" @bind="@ingredient.Name" placeholder="Ingredient Name" />
+			<input type="number" @bind="@ingredient.Qty" placeholder="Quantity" />
+			<input type="text" @bind="@ingredient.Unit" placeholder="Unit" />
+		</div>
+	}
+		<button @onclick="AddNewIngredient">Add Ingredient</button>
+	<br>
+
+@* 	<div>
+		<p>Ingredients:</p>
+		@foreach (var ingredient in Recipe.Ingredients)
+		{
+			<div>
+				<input type="text" @bind="@ingredient.Name" placeholder="Ingredient Name" />
+				<input type="number" @bind="@ingredient.Qty" placeholder="Quantity" />
+				<input type="text" @bind="@ingredient.Unit" placeholder="Unit" />
+			</div>
+		}
+		<br>
+	</div> *@
+	<br>
+
+	<div>
+		<label for="notes">Notes:</label>
+		<input type="text" id="notes" name="notes" @bind="@Recipe.Notes">
+	</div>
+	<br>
+
+	<div>
+		<label for="category">Category:</label>
+		<input type="text" id="category" name="category" @bind="@Recipe.CategoryId">
+	</div>
+	<br>
+
+	<div>
+		<label for="source">Source:</label>
+		<input type="text" id="source" name="source" @bind="@Recipe.Source">
+	</div>
+	<br>
+
+ 		<button class="btn btn-success"
+				@onclick="() => (EditRecipe_Click(new RecipeToEditDto {
+					RecipeId = Recipe.RecipeId,
+					Title = Recipe.Title,
+					Notes = Recipe.Notes,
+					CategoryId = Recipe.CategoryId,
+					Ingredients	= Recipe.Ingredients,
+					Source = Recipe.Source
+                }))">
+			<b>Update</b>
+		</button>
+	<br>
+	<button @onclick="DeleteRecipe_Click">Delete</button>
+}

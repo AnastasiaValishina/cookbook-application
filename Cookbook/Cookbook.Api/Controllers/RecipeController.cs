@@ -1,10 +1,6 @@
 ﻿using Cookbook.Api.Data;
-using Cookbook.Api.Models;
 using Cookbook.Models.Dtos;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using System.Collections.Generic;
 
 namespace Cookbook.Api.Controllers
 {
@@ -44,7 +40,7 @@ namespace Cookbook.Api.Controllers
 
 			var recipes = await _dapper.LoadDataAsync<RecipeDto>(sql);
 
-            foreach (var recipe in recipes)
+			foreach (var recipe in recipes)
 			{
 				var ingredients = await GetIngredients(recipe.RecipeId);
 				recipe.Ingredients = ingredients.ToList();
@@ -84,21 +80,21 @@ namespace Cookbook.Api.Controllers
 			return recipes;
 		}
 
-/*		[HttpGet("RecipeById/{recipeId}")] 
-		public Recipe GetRecipeById(int recipeId)
-		{
-			string sql = @"SELECT 
-				[Title],
-				[Notes],
-				[CategoryId],
-				[RecipeCreated],
-				[RecipeUpdated],
-				[Source] 
-					FROM CookbookAppSchema.Recipes
-				WHERE RecipeId = " + recipeId.ToString();
+		/*		[HttpGet("RecipeById/{recipeId}")] 
+				public Recipe GetRecipeById(int recipeId)
+				{
+					string sql = @"SELECT 
+						[Title],
+						[Notes],
+						[CategoryId],
+						[RecipeCreated],
+						[RecipeUpdated],
+						[Source] 
+							FROM CookbookAppSchema.Recipes
+						WHERE RecipeId = " + recipeId.ToString();
 
-			return _dapper.LoadDataSingle<Recipe>(sql);
-		}*/
+					return _dapper.LoadDataSingle<Recipe>(sql);
+				}*/
 
 		[HttpGet("RecipeByIdAsync/{recipeId}")]
 		public async Task<RecipeDto> GetRecipeByIdAsync(int recipeId)
@@ -172,7 +168,7 @@ namespace Cookbook.Api.Controllers
 
 				if (createdRecipe != null)
 				{
-					return Ok(createdRecipe); 
+					return Ok(createdRecipe);
 				}
 				else
 				{
@@ -196,28 +192,29 @@ namespace Cookbook.Api.Controllers
 				"', RecipeUpdated = GETDATE()" +
 				"WHERE RecipeId = " + recipeToEdit.RecipeId.ToString();
 
-			Console.WriteLine(updateSql);
-
 			await _dapper.ExecuteSqlAsync(updateSql);
 
 			foreach (var ingredient in recipeToEdit.Ingredients)
 			{
-				string ingSql = "SELECT * FROM CookbookAppSchema.Ingredients WHERE IngredientId = " + ingredient.IngredientId.ToString();
-
-				var oldIngedient = await _dapper.LoadDataSingleAsync<IngredientDto>(ingSql);
-
-				if (oldIngedient != null)
+				if (ingredient.IngredientId != 0)
 				{
-					string ingredientSql = @"
+					string ingSql = "SELECT * FROM CookbookAppSchema.Ingredients WHERE IngredientId = " + ingredient.IngredientId.ToString();
+
+					var oldIngedient = await _dapper.LoadDataSingleAsync<IngredientDto>(ingSql);
+
+					if (oldIngedient != null)
+					{
+						string ingredientSql = @"
 						UPDATE CookbookAppSchema.Ingredients 
 							SET Name = '" + ingredient.Name +
-							"', Qty = " + ingredient.Qty +
-							", Unit = '" + ingredient.Unit +
-							"' WHERE IngredientId = " + ingredient.IngredientId.ToString();
+								"', Qty = " + ingredient.Qty +
+								", Unit = '" + ingredient.Unit +
+								"' WHERE IngredientId = " + ingredient.IngredientId.ToString();
 
-					await _dapper.ExecuteSqlAsync(ingredientSql);
+						await _dapper.ExecuteSqlAsync(ingredientSql);
+					}
 				}
-				else
+				else if (ingredient.IngredientId == 0)
 				{
 					string ingredientSql = @"
 					INSERT INTO CookbookAppSchema.Ingredients (
@@ -226,13 +223,14 @@ namespace Cookbook.Api.Controllers
 						[Qty],
 						[Unit]
 					) VALUES (" + recipeToEdit.RecipeId
-						+ ",'" + ingredient.Name
-						+ "'," + ingredient.Qty
-						+ ", '" + ingredient.Unit
-						+ "')";
+							+ ",'" + ingredient.Name
+							+ "'," + ingredient.Qty
+							+ ", '" + ingredient.Unit
+							+ "')";
 
 					await _dapper.ExecuteSqlAsync(ingredientSql);
 				}
+
 			}
 
 			var updatedRecipe = await GetRecipeByIdAsync(recipeToEdit.RecipeId);
@@ -251,7 +249,7 @@ namespace Cookbook.Api.Controllers
 				{
 					string sql = @"DELETE FROM CookbookAppSchema.Recipes 
 						WHERE RecipeId = " + recipeId.ToString();
-						//+ "AND UserId = " + this.User.FindFirst("userId")?.Value;
+					//+ "AND UserId = " + this.User.FindFirst("userId")?.Value;
 
 					Console.WriteLine(sql);
 
@@ -261,7 +259,7 @@ namespace Cookbook.Api.Controllers
 					}
 				}
 
-				return NotFound();				
+				return NotFound();
 			}
 			catch (Exception ex)
 			{

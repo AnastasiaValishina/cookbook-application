@@ -1,21 +1,23 @@
-﻿using Cookbook.Models.Dtos;
-using Cookbook.Client.Services.Contracts;
+﻿using Cookbook.Client.Services.Contracts;
+using Cookbook.Models.Dtos;
 using Microsoft.AspNetCore.Components;
 
 namespace Cookbook.Client.Pages
 {
-	public class RecipeDetailsBase : ComponentBase
+	public class EditRecipeBase : ComponentBase
 	{
 		[Parameter]
 		public int Id { get; set; }
-		
+
 		[Inject]
 		public IRecipeService RecipeService { get; set; }
 
 		[Inject]
 		public NavigationManager NavigationManager { get; set; }
 		public RecipeDto Recipe { get; set; }
+
 		public string? ErrorMessage { get; set; }
+
 		protected override async Task OnInitializedAsync()
 		{
 			try
@@ -26,6 +28,23 @@ namespace Cookbook.Client.Pages
 			{
 				ErrorMessage = ex.Message;
 			}
+		}
+
+		protected async Task EditRecipe_Click(RecipeToEditDto recipeToEditDto)
+		{
+			try
+			{
+				RecipeDto recipe = await RecipeService.EditRecipe(recipeToEditDto);
+				NavigationManager.NavigateTo($"/RecipeDetails/{recipe.RecipeId}");
+			}
+			catch (Exception ex)
+			{
+				ErrorMessage = ex.Message;
+			}
+		}
+		protected void AddNewIngredient()
+		{
+			Recipe.Ingredients.Add(new IngredientDto());
 		}
 
 		protected string GetIngredientDetails(IngredientDto ingredient)
@@ -45,11 +64,5 @@ namespace Cookbook.Client.Pages
 				ErrorMessage = ex.Message;
 			}
 		}
-
-		protected void EditRecipe_Click()
-		{
-			NavigationManager.NavigateTo($"/EditRecipe/{Id}");
-		}
-
 	}
 }

@@ -102,7 +102,7 @@ namespace Cookbook.Client.Services
 		{
 			try
 			{
-				var response = await _httpClient.DeleteAsync($"Recipe/DeleteRecipeAsync/{id}");
+				var response = await _httpClient.DeleteAsync($"Recipe/DeleteRecipeAsync{id}");
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -115,6 +115,31 @@ namespace Cookbook.Client.Services
 				else
 				{
 					throw new Exception($"Failed to delete recipe. Status code: {response.StatusCode}");
+				}
+			}
+			catch (HttpRequestException ex)
+			{
+				throw new Exception("Failed to communicate with the API.", ex);
+			}
+		}
+
+		public async Task<RecipeDto> EditRecipe(RecipeToEditDto recipeToEditDto)
+		{
+			try
+			{
+				var response = await _httpClient.PutAsJsonAsync($"Recipe/UpdateAsync/", recipeToEditDto);
+
+				if (response.IsSuccessStatusCode)
+				{
+					return await response.Content.ReadFromJsonAsync<RecipeDto>();
+				}
+				else if (response.StatusCode == HttpStatusCode.NotFound)
+				{
+					return null;
+				}
+				else
+				{
+					throw new Exception($"Failed to update recipe. Status code: {response.StatusCode}");
 				}
 			}
 			catch (HttpRequestException ex)
