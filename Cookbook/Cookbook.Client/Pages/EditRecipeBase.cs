@@ -35,7 +35,7 @@ namespace Cookbook.Client.Pages
 			try
 			{
 				RecipeDto recipe = await RecipeService.EditRecipe(recipeToEditDto);
-				NavigationManager.NavigateTo($"/RecipeDetails/{recipe.RecipeId}");
+				NavigationManager.NavigateTo($"/RecipeDetails/{Id}");
 			}
 			catch (Exception ex)
 			{
@@ -45,11 +45,6 @@ namespace Cookbook.Client.Pages
 		protected void AddNewIngredient()
 		{
 			Recipe.Ingredients.Add(new IngredientDto());
-		}
-
-		protected string GetIngredientDetails(IngredientDto ingredient)
-		{
-			return $"{ingredient.Qty} {ingredient.Unit} {ingredient.Name}";
 		}
 
 		protected async Task DeleteRecipe_Click()

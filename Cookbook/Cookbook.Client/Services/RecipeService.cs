@@ -102,7 +102,7 @@ namespace Cookbook.Client.Services
 		{
 			try
 			{
-				var response = await _httpClient.DeleteAsync($"Recipe/DeleteRecipeAsync{id}");
+				var response = await _httpClient.DeleteAsync($"Recipe/DeleteRecipeAsync/{id}");
 
 				if (response.IsSuccessStatusCode)
 				{
