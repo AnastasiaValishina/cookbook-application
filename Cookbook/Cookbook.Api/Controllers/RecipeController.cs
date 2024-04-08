@@ -15,12 +15,12 @@ namespace Cookbook.Api.Controllers
 		{
 			_dapper = new DataContextDapper(config);
 		}
-
-		[HttpGet("Connection")]
-		public DateTime Connection()
-		{
-			return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
-		}
+		/*
+				[HttpGet("Connection")]
+				public DateTime Connection()
+				{
+					return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
+				}*/
 
 		[HttpGet("RecipesAsync")]
 		public async Task<IEnumerable<RecipeDto>> GetRecipesAsync()
@@ -102,20 +102,7 @@ namespace Cookbook.Api.Controllers
 		[HttpGet("RecipesByUserAsync/{userId}")]
 		public async Task<IEnumerable<RecipeDto>> GetRecipesByUserAsync(int userId)
 		{
-			string sql = @"SELECT 
-				[RecipeId],
-                [UserId],
-				[Title],
-				[Notes],
-				[CategoryId],
-				[RecipeCreated],
-				[RecipeUpdated],
-				[Source],
-				[CategoryName] 
-			FROM CookbookAppSchema.Recipes as Recipes
-			INNER JOIN CookbookAppSchema.Categories as Categories
-			ON Recipes.CategoryId = Categories.Id
-				WHERE UserId = " + userId.ToString();
+			string sql = "EXEC CookbookAppSchema.spRecipes_Get @UserId = " + userId.ToString();
 
 			var recipes = await _dapper.LoadDataAsync<RecipeDto>(sql);
 
@@ -131,20 +118,7 @@ namespace Cookbook.Api.Controllers
 		[HttpGet("RecipeByIdAsync/{recipeId}")]
 		public async Task<RecipeDto> GetRecipeByIdAsync(int recipeId)
 		{
-			string sql = @"SELECT
-				[RecipeId],
-                [UserId],
-				[Title],
-				[Notes],
-				[CategoryId],
-				[RecipeCreated],
-				[RecipeUpdated],
-				[Source],
-				[CategoryName] 
-			FROM CookbookAppSchema.Recipes as Recipes
-			INNER JOIN CookbookAppSchema.Categories as Categories
-			ON Recipes.CategoryId = Categories.Id
-				WHERE RecipeId = " + recipeId.ToString();
+			string sql = "EXEC CookbookAppSchema.spRecipes_Get @RecipeId = " + recipeId.ToString();
 
 			var recipe = await _dapper.LoadDataSingleAsync<RecipeDto>(sql);
 
@@ -157,24 +131,15 @@ namespace Cookbook.Api.Controllers
 		[HttpPost("AddRecipeAsync")]
 		public async Task<ActionResult<RecipeDto>> AddRecipeAsync(RecipeToAddDto recipe)
 		{
-			string sql = @"
-            INSERT INTO CookbookAppSchema.Recipes (
-                [UserId],
-                [Title],
-                [Notes],
-                [CategoryId],
-                [RecipeCreated],
-                [RecipeUpdated],
-                [Source]
-			) 
-				OUTPUT INSERTED.RecipeId
-				VALUES (" + 101 // this.User.FindFirst("userId")?.Value
-				+ ",'" + recipe.Title
-				+ "','" + recipe.Notes
-				+ "', " + recipe.CategoryId
-				+ ", GETDATE(), GETDATE() "
-				+ ", '" + recipe.Source + "');";
+			string sql = @"EXEC CookbookAppSchema.spRecipes_Upsert 
+				@UserId = " + 101 // this.User.FindFirst("userId")?.Value
+				+ ", @Title = '" + recipe.Title
+				+ "', @Notes = '" + recipe.Notes 
+				+ "', @CategoryId = " + recipe.CategoryId
+				+ ", @Source = '" + recipe.Source + "';";
 
+			Console.WriteLine(sql);
+			
 			int recipeId = await _dapper.ExecuteSqlWithIdAsync(sql);
 
 			if (recipeId != 0)
@@ -301,13 +266,7 @@ namespace Cookbook.Api.Controllers
 
 		private async Task<IEnumerable<IngredientDto>> GetIngredients(int recipeId) // перенести в хелпер
 		{
-			string iSql = @"SELECT 
-						[IngredientId],
-						[Name],
-						[Qty],
-						[Unit] 
-					FROM CookbookAppSchema.Ingredients as Ingredients
-					WHERE RecipeId = " + recipeId;
+			string iSql = "EXEC CookbookAppSchema.spIngredients_Get @RecipeId = " + recipeId;
 
 			return await _dapper.LoadDataAsync<IngredientDto>(iSql);
 		}
