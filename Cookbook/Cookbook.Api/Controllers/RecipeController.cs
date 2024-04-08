@@ -51,7 +51,7 @@ namespace Cookbook.Api.Controllers
 		}
 
 		[HttpGet("RecipesBySearchParam/{searchParam}")]
-		public async Task<IEnumerable<RecipeDto>> GetRecipesByUserAsync(string searchParam)
+		public async Task<IEnumerable<RecipeDto>> RecipesBySearchParam(string searchParam)
 		{
 			string sql = @"SELECT 
 				[RecipeId],
@@ -82,19 +82,21 @@ namespace Cookbook.Api.Controllers
 
 			var searchedByIngredients = await _dapper.LoadDataAsync<Ingredient>(iSql);
 
+			var recipesList = recipes.ToList();
+
 			foreach (Ingredient i in searchedByIngredients)
 			{
 				var r = await GetRecipeByIdAsync(i.RecipeId);
-				recipes.ToList().Add(r);	
+				recipesList.Add(r);
 			}
 
-			foreach (var recipe in recipes)
+			foreach (var recipe in recipesList)
 			{
 				var ingredients = await GetIngredients(recipe.RecipeId);
 				recipe.Ingredients = ingredients.ToList();
 			}
 
-			return recipes;
+			return recipesList;
 		}
 
 		[HttpGet("RecipesByUserAsync/{userId}")]

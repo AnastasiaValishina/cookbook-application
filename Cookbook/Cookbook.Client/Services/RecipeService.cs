@@ -18,20 +18,20 @@ namespace Cookbook.Client.Services
 		{
 			try
 			{
-				var responce = await _httpClient.GetAsync("Recipe/RecipesAsync");
+				var response = await _httpClient.GetAsync("Recipe/RecipesAsync");
 
-				if (responce.IsSuccessStatusCode)
+				if (response.IsSuccessStatusCode)
 				{
-					if(responce.StatusCode == System.Net.HttpStatusCode.NoContent)
+					if(response.StatusCode == System.Net.HttpStatusCode.NoContent)
 					{
 						return Enumerable.Empty<RecipeDto>();
 					}
 
-					return await responce.Content.ReadFromJsonAsync<IEnumerable<RecipeDto>>();
+					return await response.Content.ReadFromJsonAsync<IEnumerable<RecipeDto>>();
 				}
 				else
 				{
-					var message = await responce.Content.ReadAsStringAsync();
+					var message = await response.Content.ReadAsStringAsync();
 					throw new Exception(message);
 				}
 			}
@@ -145,6 +145,34 @@ namespace Cookbook.Client.Services
 			catch (HttpRequestException ex)
 			{
 				throw new Exception("Failed to communicate with the API.", ex);
+			}
+		}
+
+		public async Task<IEnumerable<RecipeDto>> GetRecipeBySearchAsync(string searchParam)
+		{				
+			try
+			{
+				var response = await _httpClient.GetAsync($"Recipe/RecipesBySearchParam/{searchParam}");
+
+				if (response.IsSuccessStatusCode)
+				{
+					if (response.StatusCode == HttpStatusCode.NoContent)
+					{
+						return Enumerable.Empty<RecipeDto>();
+					}
+
+					return await response.Content.ReadFromJsonAsync<IEnumerable<RecipeDto>>();
+				}
+				else
+				{
+					var message = await response.Content.ReadAsStringAsync();
+					throw new Exception(message);
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception: {ex}");
+				throw new Exception(ex.Message);
 			}
 		}
 	}

@@ -13,6 +13,8 @@ namespace Cookbook.Client.Pages
 		[Inject]
 		public NavigationManager NavigationManager { get; set; }
 
+		protected string searchText { get; set; } = string.Empty;
+
 		protected override async Task OnInitializedAsync()
 		{
 			Recipes = await RecipeService.GetRecipesAsync();
@@ -34,6 +36,13 @@ namespace Cookbook.Client.Pages
 		protected async Task AddNewRecipe_Click()
 		{
 			NavigationManager.NavigateTo("/AddRecipe");
+		}
+
+		protected async Task Search_Click()
+		{
+			if (searchText == string.Empty) return;
+
+			Recipes = await RecipeService.GetRecipeBySearchAsync(searchText);
 		}
 	}
 }

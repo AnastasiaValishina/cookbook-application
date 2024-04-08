@@ -1,7 +1,7 @@
 ﻿@page "/"
 @inherits RecipesBase
 
-@if(Recipes == null)
+@if (Recipes == null)
 {
 	<DisplaySpinner />
 }
@@ -10,12 +10,22 @@ else
 	<h3 class="mb-5">Recipes</h3>
 
 	<div>
+		<input type="text" @bind="@searchText" placeholder="Search..">
+
+		<button class="btn btn-success"
+				@onclick="() => (Search_Click())">
+			<b>Search</b>
+		</button>
+	</div>
+	<br>
+
+	<div>
 		<button class="btn btn-success"
 				@onclick="() => (AddNewRecipe_Click())">
 			<b>Add new recipe</b>
 		</button>
 	</div>
-	<p></p>
+	<br>
 
 
 	var itemCount = Recipes.Count();
@@ -23,13 +33,13 @@ else
 	@if (itemCount > 0)
 	{
 		@foreach (var group in GetGroupedByCategory())
-			{
-				<h4>@GetCategoryName(group)</h4>
-					
-				<div class="row mt-3">
-					<DisplayRecipes Recipes="@group"></DisplayRecipes>
-				</div>
-				<hr class="mb-3"/>
-			}							
+		{
+			<h4>@GetCategoryName(group)</h4>
+
+			<div class="row mt-3">
+				<DisplayRecipes Recipes="@group"></DisplayRecipes>
+			</div>
+			<hr class="mb-3" />
+		}
 	}
 }
