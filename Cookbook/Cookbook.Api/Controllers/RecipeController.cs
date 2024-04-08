@@ -1,7 +1,7 @@
 ﻿using Cookbook.Api.Data;
+using Cookbook.Api.Models;
 using Cookbook.Models.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 
 namespace Cookbook.Api.Controllers
 {
@@ -70,6 +70,23 @@ namespace Cookbook.Api.Controllers
 					" OR Notes LIKE '%" + searchParam + "%'";
 
 			var recipes = await _dapper.LoadDataAsync<RecipeDto>(sql);
+
+			string iSql = @"SELECT 
+						[IngredientId],
+						[RecipeId],
+						[Name],
+						[Qty],
+						[Unit] 
+					FROM CookbookAppSchema.Ingredients as Ingredients
+						WHERE Name LIKE '%" + searchParam + "%'";
+
+			var searchedByIngredients = await _dapper.LoadDataAsync<Ingredient>(iSql);
+
+			foreach (Ingredient i in searchedByIngredients)
+			{
+				var r = await GetRecipeByIdAsync(i.RecipeId);
+				recipes.ToList().Add(r);	
+			}
 
 			foreach (var recipe in recipes)
 			{
