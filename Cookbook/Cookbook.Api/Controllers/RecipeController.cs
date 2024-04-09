@@ -113,13 +113,12 @@ namespace Cookbook.Api.Controllers
 		[HttpPut("UpdateAsync")]
 		public async Task<RecipeDto> UpdateAsync(RecipeToEditDto recipeToEdit)
 		{
-			string updateSql = @"UPDATE CookbookAppSchema.Recipes
-				SET Title = '" + recipeToEdit.Title +
-				"', Notes = '" + recipeToEdit.Notes +
-				"', CategoryId = " + recipeToEdit.CategoryId.ToString() +
-				", Source = '" + recipeToEdit.Source +
-				"', RecipeUpdated = GETDATE()" +
-				"WHERE RecipeId = " + recipeToEdit.RecipeId.ToString();
+			string updateSql = @"EXEC CookbookAppSchema.spRecipes_Update 
+				@RecipeId = " + recipeToEdit.RecipeId.ToString() +
+				", @Title '" + recipeToEdit.Title + 
+				"', @Notes = '" + recipeToEdit.Notes + 
+				"', @CategoryId = " + recipeToEdit.CategoryId.ToString() + 
+				", @Source = '" + recipeToEdit.Source + "'"; 
 
 			await _dapper.ExecuteSqlAsync(updateSql);
 
@@ -127,7 +126,7 @@ namespace Cookbook.Api.Controllers
 			{
 				if (ingredient.IngredientId != 0)
 				{
-					string ingSql = "EXEC CookbookAppSchema.spIngredients_Get @IngredientId =  " + ingredient.IngredientId.ToString();
+					string ingSql = "EXEC CookbookAppSchema.spIngredients_Get @IngredientId = " + ingredient.IngredientId.ToString();
 
 					var oldIngedient = await _dapper.LoadDataSingleAsync<IngredientDto>(ingSql);
 
@@ -170,11 +169,8 @@ namespace Cookbook.Api.Controllers
 
 				if (recipeToDelete != null)
 				{
-					string sql = @"DELETE FROM CookbookAppSchema.Recipes 
-						WHERE RecipeId = " + recipeId.ToString();
-					//+ "AND UserId = " + this.User.FindFirst("userId")?.Value;
-
-					Console.WriteLine(sql);
+					string sql = $"EXEC CookbookAppSchema.spRecipes_Delete @RecipeId = {recipeId}, @UserId = {101}";
+					//this.User.FindFirst("userId")?.Value;
 
 					if (await _dapper.ExecuteSqlAsync(sql))
 					{
