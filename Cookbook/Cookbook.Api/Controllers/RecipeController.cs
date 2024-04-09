@@ -25,50 +25,17 @@ namespace Cookbook.Api.Controllers
 		[HttpGet("RecipesBySearchParam/{searchParam}")]
 		public async Task<IEnumerable<RecipeDto>> GetRecipesBySearchParam(string searchParam)
 		{
-			string sql = @"SELECT 
-				[RecipeId],
-                [UserId],
-				[Title],
-				[Notes],
-				[CategoryId],
-				[RecipeCreated],
-				[RecipeUpdated],
-				[Source],
-				[CategoryName] 
-			FROM CookbookAppSchema.Recipes as Recipes
-			INNER JOIN CookbookAppSchema.Categories as Categories
-			ON Recipes.CategoryId = Categories.Id
-                WHERE Title LIKE '%" + searchParam + "%'" +
-					" OR Notes LIKE '%" + searchParam + "%'";
+			string sql = $"EXEC CookbookAppSchema.spRecipes_GetBySearch @SearchParam = {searchParam}";
 
 			var recipes = await _dapper.LoadDataAsync<RecipeDto>(sql);
 
-			string iSql = @"SELECT 
-						[IngredientId],
-						[RecipeId],
-						[Name],
-						[Qty],
-						[Unit] 
-					FROM CookbookAppSchema.Ingredients as Ingredients
-						WHERE Name LIKE '%" + searchParam + "%'";
-
-			var searchedByIngredients = await _dapper.LoadDataAsync<Ingredient>(iSql);
-
-			var recipesList = recipes.ToList();
-
-			foreach (Ingredient i in searchedByIngredients)
-			{
-				var r = await GetRecipeByIdAsync(i.RecipeId);
-				recipesList.Add(r);
-			}
-
-			foreach (var recipe in recipesList)
+			foreach (var recipe in recipes)
 			{
 				var ingredients = await GetIngredients(recipe.RecipeId);
 				recipe.Ingredients = ingredients.ToList();
 			}
 
-			return recipesList;
+			return recipes;
 		}
 
 		[HttpGet("RecipesByUserAsync/{userId}")]
