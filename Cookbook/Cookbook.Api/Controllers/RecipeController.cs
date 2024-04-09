@@ -22,36 +22,8 @@ namespace Cookbook.Api.Controllers
 					return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
 				}*/
 
-		[HttpGet("RecipesAsync")]
-		public async Task<IEnumerable<RecipeDto>> GetRecipesAsync()
-		{
-			string sql = @"SELECT 
-					[RecipeId],
-                    [UserId],
-                    [Title],
-                    [Notes],
-                    [CategoryId],
-                    [RecipeCreated],
-                    [RecipeUpdated],
-                    [Source], 
-                    [CategoryName]
-				FROM CookbookAppSchema.Recipes as Recipes
-				INNER JOIN CookbookAppSchema.Categories as Categories
-				ON Recipes.CategoryId = Categories.Id;";
-
-			var recipes = await _dapper.LoadDataAsync<RecipeDto>(sql);
-
-			foreach (var recipe in recipes)
-			{
-				var ingredients = await GetIngredients(recipe.RecipeId);
-				recipe.Ingredients = ingredients.ToList();
-			}
-
-			return recipes;
-		}
-
 		[HttpGet("RecipesBySearchParam/{searchParam}")]
-		public async Task<IEnumerable<RecipeDto>> RecipesBySearchParam(string searchParam)
+		public async Task<IEnumerable<RecipeDto>> GetRecipesBySearchParam(string searchParam)
 		{
 			string sql = @"SELECT 
 				[RecipeId],
@@ -131,32 +103,25 @@ namespace Cookbook.Api.Controllers
 		[HttpPost("AddRecipeAsync")]
 		public async Task<ActionResult<RecipeDto>> AddRecipeAsync(RecipeToAddDto recipe)
 		{
-			string sql = @"EXEC CookbookAppSchema.spRecipes_Upsert 
+			string sql = @"EXEC CookbookAppSchema.spRecipe_Add 
 				@UserId = " + 101 // this.User.FindFirst("userId")?.Value
 				+ ", @Title = '" + recipe.Title
 				+ "', @Notes = '" + recipe.Notes 
 				+ "', @CategoryId = " + recipe.CategoryId
 				+ ", @Source = '" + recipe.Source + "';";
 
-			Console.WriteLine(sql);
-			
 			int recipeId = await _dapper.ExecuteSqlWithIdAsync(sql);
 
 			if (recipeId != 0)
 			{
 				foreach (var ingredient in recipe.Ingredients)
 				{
-					string ingredientSql = @"
-					INSERT INTO CookbookAppSchema.Ingredients (
-						[RecipeId],
-						[Name],
-						[Qty],
-						[Unit]
-					) VALUES (" + recipeId
-							+ ",'" + ingredient.Name
-							+ "'," + ingredient.Qty
-							+ ", '" + ingredient.Unit
-							+ "')";
+					string ingredientSql = @"EXEC CookbookAppSchema.spIngredient_Add 
+						@RecipeId = " + recipeId
+						+ ", @Name = '" + ingredient.Name
+						+ "', @Qty = '" + ingredient.Qty
+						+ "', @Unit = '" + ingredient.Unit
+						+ "'";
 
 					await _dapper.ExecuteSqlAsync(ingredientSql);
 				}
@@ -195,7 +160,7 @@ namespace Cookbook.Api.Controllers
 			{
 				if (ingredient.IngredientId != 0)
 				{
-					string ingSql = "SELECT * FROM CookbookAppSchema.Ingredients WHERE IngredientId = " + ingredient.IngredientId.ToString();
+					string ingSql = "EXEC CookbookAppSchema.spIngredients_Get @IngredientId =  " + ingredient.IngredientId.ToString();
 
 					var oldIngedient = await _dapper.LoadDataSingleAsync<IngredientDto>(ingSql);
 
@@ -213,21 +178,15 @@ namespace Cookbook.Api.Controllers
 				}
 				else if (ingredient.IngredientId == 0)
 				{
-					string ingredientSql = @"
-					INSERT INTO CookbookAppSchema.Ingredients (
-						[RecipeId],
-						[Name],
-						[Qty],
-						[Unit]
-					) VALUES (" + recipeToEdit.RecipeId
-							+ ",'" + ingredient.Name
-							+ "'," + ingredient.Qty
-							+ ", '" + ingredient.Unit
-							+ "')";
+					string ingredientSql = @"EXEC CookbookAppSchema.spIngredient_Add 
+						@RecipeId = " + recipeToEdit.RecipeId
+						+ ", @Name = '" + ingredient.Name
+						+ "', @Qty = '" + ingredient.Qty
+						+ "', @Unit = '" + ingredient.Unit
+						+ "'";
 
 					await _dapper.ExecuteSqlAsync(ingredientSql);
 				}
-
 			}
 
 			var updatedRecipe = await GetRecipeByIdAsync(recipeToEdit.RecipeId);

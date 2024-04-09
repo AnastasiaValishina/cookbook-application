@@ -18,7 +18,7 @@ namespace Cookbook.Client.Services
 		{
 			try
 			{
-				var response = await _httpClient.GetAsync("Recipe/RecipesAsync");
+				var response = await _httpClient.GetAsync($"Recipe/RecipesByUserAsync/{101}");
 
 				if (response.IsSuccessStatusCode)
 				{
