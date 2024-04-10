@@ -115,7 +115,7 @@ namespace Cookbook.Api.Controllers
 		{
 			string updateSql = @"EXEC CookbookAppSchema.spRecipes_Update 
 				@RecipeId = " + recipeToEdit.RecipeId.ToString() +
-				", @Title '" + recipeToEdit.Title + 
+				", @Title = '" + recipeToEdit.Title + 
 				"', @Notes = '" + recipeToEdit.Notes + 
 				"', @CategoryId = " + recipeToEdit.CategoryId.ToString() + 
 				", @Source = '" + recipeToEdit.Source + "'"; 
@@ -124,35 +124,14 @@ namespace Cookbook.Api.Controllers
 
 			foreach (var ingredient in recipeToEdit.Ingredients)
 			{
-				if (ingredient.IngredientId != 0)
-				{
-					string ingSql = "EXEC CookbookAppSchema.spIngredients_Get @IngredientId = " + ingredient.IngredientId.ToString();
+				string ingSql = @"EXEC CookbookAppSchema.spIngredient_Upsert 
+					@IngredientId = " + ingredient.IngredientId + 
+					", @RecipeId = " + recipeToEdit.RecipeId + 
+					", @Name = '" + ingredient.Name + 
+					"', @Qty = " + ingredient.Qty + 
+					", @Unit = '" + ingredient.Unit + "'";
 
-					var oldIngedient = await _dapper.LoadDataSingleAsync<IngredientDto>(ingSql);
-
-					if (oldIngedient != null)
-					{
-						string ingredientSql = @"
-						UPDATE CookbookAppSchema.Ingredients 
-							SET Name = '" + ingredient.Name +
-								"', Qty = " + ingredient.Qty +
-								", Unit = '" + ingredient.Unit +
-								"' WHERE IngredientId = " + ingredient.IngredientId.ToString();
-
-						await _dapper.ExecuteSqlAsync(ingredientSql);
-					}
-				}
-				else if (ingredient.IngredientId == 0)
-				{
-					string ingredientSql = @"EXEC CookbookAppSchema.spIngredient_Add 
-						@RecipeId = " + recipeToEdit.RecipeId
-						+ ", @Name = '" + ingredient.Name
-						+ "', @Qty = '" + ingredient.Qty
-						+ "', @Unit = '" + ingredient.Unit
-						+ "'";
-
-					await _dapper.ExecuteSqlAsync(ingredientSql);
-				}
+				await _dapper.ExecuteSqlAsync(ingSql);
 			}
 
 			var updatedRecipe = await GetRecipeByIdAsync(recipeToEdit.RecipeId);

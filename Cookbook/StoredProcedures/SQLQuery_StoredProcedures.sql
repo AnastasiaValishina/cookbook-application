@@ -121,11 +121,15 @@ BEGIN
     ELSE
         BEGIN
             UPDATE CookbookAppSchema.Ingredients
-
+            SET RecipeId = @RecipeId,
+                Name = @Name,
+                Qty = @Qty,
+                Unit = @Unit
+            WHERE IngredientId = @IngredientId
         END
 END
 GO
--- EXEC CookbookAppSchema.spIngredient_Add @RecipeId = ,@Name = '', @Qty = '', @Unit = ''   
+-- EXEC CookbookAppSchema.spIngredient_Upsert @IngredientId = , @RecipeId = ,@Name = '', @Qty = '', @Unit = ''   
 
 
 CREATE OR ALTER PROCEDURE CookbookAppSchema.spRecipes_GetBySearch
@@ -191,4 +195,3 @@ BEGIN
 END
 GO
 -- EXEC CookbookAppSchema.spRecipes_Update @RecipeId = , @Title '', @Notes = '', @CategoryId = '', @Source = '' 
-

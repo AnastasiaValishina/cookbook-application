@@ -24,9 +24,10 @@ else
 			<input type="text" @bind="@ingredient.Name" placeholder="Ingredient Name" />
 			<input type="number" @bind="@ingredient.Qty" placeholder="Quantity" />
 			<input type="text" @bind="@ingredient.Unit" placeholder="Unit" />
+			<button @onclick="@(async () => await DeleteIngredient_Click(ingredient))">Delete Ingredient</button>
 		</div>
 	}
-		<button @onclick="AddNewIngredient">Add Ingredient</button>
+		<button @onclick="AddNewIngredient_Click">Add Ingredient</button>
 	<br>
 
 

@@ -42,7 +42,8 @@ namespace Cookbook.Client.Pages
 				ErrorMessage = ex.Message;
 			}
 		}
-		protected void AddNewIngredient()
+
+		protected void AddNewIngredient_Click()
 		{
 			Recipe.Ingredients.Add(new IngredientDto());
 		}
@@ -58,6 +59,11 @@ namespace Cookbook.Client.Pages
 			{
 				ErrorMessage = ex.Message;
 			}
+		}
+
+		protected async Task DeleteIngredient_Click(IngredientDto ingredientToDelete)
+		{
+			Recipe.Ingredients.Remove(ingredientToDelete);
 		}
 	}
 }
