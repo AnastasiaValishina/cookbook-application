@@ -76,33 +76,12 @@ GO
 -- EXEC CookbookAppSchema.spRecipes_Add @UserId = 101, @Title = 'sp test', @Notes = 'sp test', @CategoryId = 1, @Source = 'sp test';
 
 
-CREATE OR ALTER PROCEDURE CookbookAppSchema.spIngredient_Add
+CREATE OR ALTER PROCEDURE CookbookAppSchema.spIngredient_Upsert
     @RecipeId INT
     , @Name NVARCHAR(MAX)
     , @Qty FLOAT
     , @Unit NVARCHAR(50)
-AS
-BEGIN
-	INSERT INTO CookbookAppSchema.Ingredients (
-		[RecipeId],
-		[Name],
-		[Qty],
-		[Unit]
-	) VALUES (
-        @RecipeId,
-        @Name,
-        @Qty,
-        @Unit)
-END
-GO
--- EXEC CookbookAppSchema.spIngredient_Add @RecipeId = ,@Name = '', @Qty = '', @Unit = ''   
-
-CREATE OR ALTER PROCEDURE CookbookAppSchema.spIngredient_Upsert
-    @IngredientId INT = NULL
-    , @RecipeId INT
-    , @Name NVARCHAR(MAX)
-    , @Qty FLOAT
-    , @Unit NVARCHAR(50)
+    , @IngredientId INT = NULL
 AS
 BEGIN
     IF NOT EXISTS (SELECT * FROM CookbookAppSchema.Ingredients WHERE IngredientId = @IngredientId)
@@ -176,6 +155,16 @@ BEGIN
 END
 GO
 -- EXEC CookbookAppSchema.spRecipes_Delete @RecipeId = , @UserId = 
+
+CREATE OR ALTER PROCEDURE CookbookAppSchema.spIngredient_Delete
+    @IngredientId INT
+AS
+BEGIN
+    DELETE FROM CookbookAppSchema.Ingredients 
+        WHERE IngredientId = @IngredientId
+END
+GO
+-- EXEC CookbookAppSchema.spIngredient_Delete @IngredientId = 
 
 CREATE OR ALTER PROCEDURE CookbookAppSchema.spRecipes_Update
     @RecipeId INT 

@@ -83,7 +83,7 @@ namespace Cookbook.Api.Controllers
 			{
 				foreach (var ingredient in recipe.Ingredients)
 				{
-					string ingredientSql = @"EXEC CookbookAppSchema.spIngredient_Add 
+					string ingredientSql = @"EXEC CookbookAppSchema.spIngredient_Upsert 
 						@RecipeId = " + recipeId
 						+ ", @Name = '" + ingredient.Name
 						+ "', @Qty = '" + ingredient.Qty
@@ -180,7 +180,7 @@ namespace Cookbook.Api.Controllers
 			}
 		}
 
-		public async Task<IActionResult> DeleteIngredientAsync(int ingredientId) // перенести в хелпер
+		private async Task<IActionResult> DeleteIngredientAsync(int ingredientId) // перенести в хелпер
 		{
 			try
 			{
