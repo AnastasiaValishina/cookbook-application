@@ -43,7 +43,7 @@ BEGIN
                 AND Ingredients.IngredientId = ISNULL (@IngredientId, Ingredients.IngredientId)
 END
 GO
--- EXEC CookbookAppSchema.spIngredients_Get @RecipeId = 2023, @IngredientId = 
+-- EXEC CookbookAppSchema.spIngredients_Get @RecipeId = 1004, @IngredientId = 1
 
 
 CREATE OR ALTER PROCEDURE CookbookAppSchema.spRecipe_Add
@@ -98,7 +98,7 @@ GO
 -- EXEC CookbookAppSchema.spIngredient_Add @RecipeId = ,@Name = '', @Qty = '', @Unit = ''   
 
 CREATE OR ALTER PROCEDURE CookbookAppSchema.spIngredient_Upsert
-    @IngredientId INT
+    @IngredientId INT = NULL
     , @RecipeId INT
     , @Name NVARCHAR(MAX)
     , @Qty FLOAT
@@ -195,3 +195,4 @@ BEGIN
 END
 GO
 -- EXEC CookbookAppSchema.spRecipes_Update @RecipeId = , @Title '', @Notes = '', @CategoryId = '', @Source = '' 
+

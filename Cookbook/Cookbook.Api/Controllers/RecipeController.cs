@@ -113,6 +113,7 @@ namespace Cookbook.Api.Controllers
 		[HttpPut("UpdateAsync")]
 		public async Task<RecipeDto> UpdateAsync(RecipeToEditDto recipeToEdit)
 		{
+			// update recipe
 			string updateSql = @"EXEC CookbookAppSchema.spRecipes_Update 
 				@RecipeId = " + recipeToEdit.RecipeId.ToString() +
 				", @Title = '" + recipeToEdit.Title + 
@@ -122,6 +123,21 @@ namespace Cookbook.Api.Controllers
 
 			await _dapper.ExecuteSqlAsync(updateSql);
 
+			// delete ingredients
+			var oldIngredients = await GetIngredients(recipeToEdit.RecipeId);
+
+			List<int> newIds = new List<int>();
+			foreach (var newIng in recipeToEdit.Ingredients)
+			{
+				newIds.Add(newIng.IngredientId);
+			}
+			foreach (var ingredient in oldIngredients)
+			{
+				if (!newIds.Contains(ingredient.IngredientId))
+					await DeleteIngredientAsync(ingredient.IngredientId);
+			}
+
+			// update/add ingredients 
 			foreach (var ingredient in recipeToEdit.Ingredients)
 			{
 				string ingSql = @"EXEC CookbookAppSchema.spIngredient_Upsert 
@@ -156,12 +172,30 @@ namespace Cookbook.Api.Controllers
 						return Ok(recipeToDelete);
 					}
 				}
-
 				return NotFound();
 			}
 			catch (Exception ex)
 			{
 				return StatusCode(500, $"Failed to delete recipe: {ex.Message}");
+			}
+		}
+
+		public async Task<IActionResult> DeleteIngredientAsync(int ingredientId) // перенести в хелпер
+		{
+			try
+			{
+				string sql = "EXEC CookbookAppSchema.spIngredient_Delete @IngredientId = " + ingredientId;
+
+				if (await _dapper.ExecuteSqlAsync(sql))
+				{
+					return Ok();
+				}
+
+				return NotFound();
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Failed to delete ingredient: {ex.Message}");
 			}
 		}
 
