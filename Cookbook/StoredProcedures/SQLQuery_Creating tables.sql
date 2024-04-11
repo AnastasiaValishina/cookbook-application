@@ -49,8 +49,14 @@ CREATE TABLE CookbookAppSchema.Users
     UserId INT IDENTITY(1, 1) PRIMARY KEY
     , UserName NVARCHAR(50)
     , Email NVARCHAR(50)
-);
+); 
 
+
+CREATE TABLE CookbookAppSchema.Auth(
+	Email NVARCHAR(50) PRIMARY KEY,
+	PasswordHash VARBINARY(MAX),
+	PasswordSalt VARBINARY(MAX)
+)
 
 INSERT INTO CookbookAppSchema.Categories(
     [CategoryName]

@@ -40,6 +40,27 @@ namespace Cookbook.Api.Data
 			return dbConnection.Execute(sql);
 		}
 
+		public bool ExecuteSqlWithParameters(string sql, List<SqlParameter> parameters)
+		{
+			SqlCommand commandWithParams = new SqlCommand(sql);
+
+            foreach (SqlParameter parameter in parameters)
+            {
+				commandWithParams.Parameters.Add(parameter);
+            }
+
+			SqlConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING));
+			dbConnection.Open();
+
+			commandWithParams.Connection = dbConnection;
+
+			int rowsAffected = commandWithParams.ExecuteNonQuery();
+
+			dbConnection.Close();
+
+			return rowsAffected > 0;
+		}
+
 		public async Task<IEnumerable<T>> LoadDataAsync<T>(string sql)
 		{
 			using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING)))
