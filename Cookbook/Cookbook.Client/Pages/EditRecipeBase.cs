@@ -34,7 +34,7 @@ namespace Cookbook.Client.Pages
 		{
 			try
 			{
-				RecipeDto recipe = await RecipeService.EditRecipe(recipeToEditDto);
+				await RecipeService.EditRecipe(recipeToEditDto);
 				NavigationManager.NavigateTo($"/RecipeDetails/{Id}");
 			}
 			catch (Exception ex)

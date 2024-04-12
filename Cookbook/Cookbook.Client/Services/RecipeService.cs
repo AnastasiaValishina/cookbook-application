@@ -18,7 +18,7 @@ namespace Cookbook.Client.Services
 		{
 			try
 			{
-				var response = await _httpClient.GetAsync($"Recipe/RecipesByUserAsync/{101}");
+				var response = await _httpClient.GetAsync($"Recipe/MyRecipes/");
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -123,23 +123,22 @@ namespace Cookbook.Client.Services
 			}
 		}
 
-		public async Task<RecipeDto> EditRecipe(RecipeToEditDto recipeToEditDto)
+		public async Task EditRecipe(RecipeToEditDto recipeToEditDto)
 		{
 			try
 			{
 				var response = await _httpClient.PutAsJsonAsync($"Recipe/UpdateAsync/", recipeToEditDto);
 
-				if (response.IsSuccessStatusCode)
+				if (!response.IsSuccessStatusCode)
 				{
-					return await response.Content.ReadFromJsonAsync<RecipeDto>();
-				}
-				else if (response.StatusCode == HttpStatusCode.NotFound)
-				{
-					return null;
-				}
-				else
-				{
-					throw new Exception($"Failed to update recipe. Status code: {response.StatusCode}");
+					if (response.StatusCode == HttpStatusCode.NotFound)
+					{
+						return; 
+					}
+					else
+					{
+						throw new Exception($"Failed to update recipe. Status code: {response.StatusCode}");
+					}
 				}
 			}
 			catch (HttpRequestException ex)

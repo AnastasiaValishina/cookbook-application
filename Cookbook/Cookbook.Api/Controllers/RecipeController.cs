@@ -1,10 +1,11 @@
 ﻿using Cookbook.Api.Data;
-using Cookbook.Api.Models;
 using Cookbook.Models.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cookbook.Api.Controllers
 {
+	[Authorize]
 	[ApiController]
 	[Route("[controller]")]
 	public class RecipeController : ControllerBase
@@ -25,7 +26,9 @@ namespace Cookbook.Api.Controllers
 		[HttpGet("RecipesBySearchParam/{searchParam}")]
 		public async Task<IEnumerable<RecipeDto>> GetRecipesBySearchParam(string searchParam)
 		{
-			string sql = $"EXEC CookbookAppSchema.spRecipes_GetBySearch @SearchParam = {searchParam}";
+			string sql = @"EXEC CookbookAppSchema.spRecipes_GetBySearch 
+							@SearchParam = '" + searchParam + 
+							"', @UserId = " + this.User.FindFirst("userId")?.Value;
 
 			var recipes = await _dapper.LoadDataAsync<RecipeDto>(sql);
 
@@ -38,10 +41,10 @@ namespace Cookbook.Api.Controllers
 			return recipes;
 		}
 
-		[HttpGet("RecipesByUserAsync/{userId}")]
-		public async Task<IEnumerable<RecipeDto>> GetRecipesByUserAsync(int userId)
+		[HttpGet("MyRecipes")]
+		public async Task<IEnumerable<RecipeDto>> GetMyRecipesAsync()
 		{
-			string sql = "EXEC CookbookAppSchema.spRecipes_Get @UserId = " + userId.ToString();
+			string sql = "EXEC CookbookAppSchema.spRecipes_Get @UserId = " + this.User.FindFirst("userId")?.Value;
 
 			var recipes = await _dapper.LoadDataAsync<RecipeDto>(sql);
 
@@ -71,7 +74,7 @@ namespace Cookbook.Api.Controllers
 		public async Task<ActionResult<RecipeDto>> AddRecipeAsync(RecipeToAddDto recipe)
 		{
 			string sql = @"EXEC CookbookAppSchema.spRecipe_Add 
-				@UserId = " + 101 // this.User.FindFirst("userId")?.Value
+				@UserId = " + this.User.FindFirst("userId")?.Value
 				+ ", @Title = '" + recipe.Title
 				+ "', @Notes = '" + recipe.Notes 
 				+ "', @CategoryId = " + recipe.CategoryId
@@ -111,48 +114,55 @@ namespace Cookbook.Api.Controllers
 		}
 
 		[HttpPut("UpdateAsync")]
-		public async Task<RecipeDto> UpdateAsync(RecipeToEditDto recipeToEdit)
+		public async Task<ActionResult> UpdateAsync(RecipeToEditDto recipeToEdit)
 		{
-			// update recipe
-			string updateSql = @"EXEC CookbookAppSchema.spRecipes_Update 
-				@RecipeId = " + recipeToEdit.RecipeId.ToString() +
-				", @Title = '" + recipeToEdit.Title + 
-				"', @Notes = '" + recipeToEdit.Notes + 
-				"', @CategoryId = " + recipeToEdit.CategoryId.ToString() + 
-				", @Source = '" + recipeToEdit.Source + "'"; 
-
-			await _dapper.ExecuteSqlAsync(updateSql);
-
-			// delete ingredients
-			var oldIngredients = await GetIngredients(recipeToEdit.RecipeId);
-
-			List<int> newIds = new List<int>();
-			foreach (var newIng in recipeToEdit.Ingredients)
+			try
 			{
-				newIds.Add(newIng.IngredientId);
+				// update recipe
+				string updateSql = @"EXEC CookbookAppSchema.spRecipes_Update 
+				@UserId = " + this.User.FindFirst("userId")?.Value +
+					", @RecipeId = " + recipeToEdit.RecipeId.ToString() +
+					", @Title = '" + recipeToEdit.Title +
+					"', @Notes = '" + recipeToEdit.Notes +
+					"', @CategoryId = " + recipeToEdit.CategoryId.ToString() +
+					", @Source = '" + recipeToEdit.Source + "'";
+
+				if (await _dapper.ExecuteSqlAsync(updateSql))
+				{
+					// delete ingredients
+					var oldIngredients = await GetIngredients(recipeToEdit.RecipeId);
+
+					List<int> newIds = new List<int>();
+					foreach (var newIng in recipeToEdit.Ingredients)
+					{
+						newIds.Add(newIng.IngredientId);
+					}
+					foreach (var ingredient in oldIngredients)
+					{
+						if (!newIds.Contains(ingredient.IngredientId))
+							await DeleteIngredientAsync(ingredient.IngredientId);
+					}
+
+					// update/add ingredients 
+					foreach (var ingredient in recipeToEdit.Ingredients)
+					{
+						string ingSql = @"EXEC CookbookAppSchema.spIngredient_Upsert 
+					@IngredientId = " + ingredient.IngredientId +
+							", @RecipeId = " + recipeToEdit.RecipeId +
+							", @Name = '" + ingredient.Name +
+							"', @Qty = " + ingredient.Qty +
+							", @Unit = '" + ingredient.Unit + "'";
+
+						await _dapper.ExecuteSqlAsync(ingSql);
+					}
+					return Ok();
+				}
+				return BadRequest("It is not your recipe to update!");
 			}
-			foreach (var ingredient in oldIngredients)
+			catch (Exception ex)
 			{
-				if (!newIds.Contains(ingredient.IngredientId))
-					await DeleteIngredientAsync(ingredient.IngredientId);
+				return StatusCode(500, $"Failed to update recipe: {ex.Message}");
 			}
-
-			// update/add ingredients 
-			foreach (var ingredient in recipeToEdit.Ingredients)
-			{
-				string ingSql = @"EXEC CookbookAppSchema.spIngredient_Upsert 
-					@IngredientId = " + ingredient.IngredientId + 
-					", @RecipeId = " + recipeToEdit.RecipeId + 
-					", @Name = '" + ingredient.Name + 
-					"', @Qty = " + ingredient.Qty + 
-					", @Unit = '" + ingredient.Unit + "'";
-
-				await _dapper.ExecuteSqlAsync(ingSql);
-			}
-
-			var updatedRecipe = await GetRecipeByIdAsync(recipeToEdit.RecipeId);
-
-			return updatedRecipe;
 		}
 
 		[HttpDelete("DeleteRecipeAsync/{recipeId}")]
@@ -164,8 +174,8 @@ namespace Cookbook.Api.Controllers
 
 				if (recipeToDelete != null)
 				{
-					string sql = $"EXEC CookbookAppSchema.spRecipes_Delete @RecipeId = {recipeId}, @UserId = {101}";
-					//this.User.FindFirst("userId")?.Value;
+					string? userId = this.User.FindFirst("userId")?.Value;
+					string sql = $"EXEC CookbookAppSchema.spRecipes_Delete @RecipeId = {recipeId}, @UserId = {userId}";					
 
 					if (await _dapper.ExecuteSqlAsync(sql))
 					{

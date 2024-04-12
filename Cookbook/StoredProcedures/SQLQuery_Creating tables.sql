@@ -7,13 +7,13 @@ GO
 CREATE SCHEMA CookbookAppSchema
 GO
 
-DROP TABLE CookbookAppSchema.Ingredients
+DROP TABLE IF EXISTS CookbookAppSchema.Ingredients
 GO
 
-DROP TABLE CookbookAppSchema.Recipes
+DROP TABLE IF EXISTS CookbookAppSchema.Recipes
 GO
 
-DROP TABLE CookbookAppSchema.Categories
+DROP TABLE IF EXISTS CookbookAppSchema.Categories
 GO
 
 CREATE TABLE CookbookAppSchema.Recipes
@@ -27,16 +27,21 @@ CREATE TABLE CookbookAppSchema.Recipes
     RecipeUpdated DATETIME,
     Source NVARCHAR(MAX)
 )
+
+CREATE INDEX ix_Recipes_UserId ON CookbookAppSchema.Recipes(UserId)
 GO
 
 CREATE TABLE CookbookAppSchema.Ingredients (
-    IngredientId INT IDENTITY(1, 1) PRIMARY KEY,
+    IngredientId INT IDENTITY(1, 1),
     RecipeId INT,
     Name NVARCHAR(MAX),
     Qty FLOAT,
     Unit NVARCHAR(50),
-    FOREIGN KEY (RecipeId) REFERENCES CookbookAppSchema.Recipes(RecipeId)
+    FOREIGN KEY (RecipeId) REFERENCES CookbookAppSchema.Recipes(RecipeId) ON DELETE CASCADE
 );
+
+CREATE CLUSTERED INDEX cix_Ingredients_RecipeId_IngredientId ON CookbookAppSchema.Ingredients(RecipeId, IngredientId)
+GO
 
 CREATE TABLE CookbookAppSchema.Categories
 (
@@ -51,8 +56,8 @@ CREATE TABLE CookbookAppSchema.Users
     , Email NVARCHAR(50)
 ); 
 
-
-CREATE TABLE CookbookAppSchema.Auth(
+CREATE TABLE CookbookAppSchema.Auth
+(
 	Email NVARCHAR(50) PRIMARY KEY,
 	PasswordHash VARBINARY(MAX),
 	PasswordSalt VARBINARY(MAX)
