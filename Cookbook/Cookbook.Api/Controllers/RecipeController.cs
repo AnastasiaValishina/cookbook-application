@@ -41,10 +41,15 @@ namespace Cookbook.Api.Controllers
 			return recipes;
 		}
 
-		[HttpGet("MyRecipes")]
-		public async Task<IEnumerable<RecipeDto>> GetMyRecipesAsync()
+		[HttpGet("MyRecipes/{recipeId}")]
+		public async Task<IEnumerable<RecipeDto>> GetMyRecipesAsync(int recipeId = 0)
 		{
 			string sql = "EXEC CookbookAppSchema.spRecipes_Get @UserId = " + this.User.FindFirst("userId")?.Value;
+
+			if (recipeId != 0)
+			{
+				sql += ", @RecipeId = " + recipeId.ToString();
+			}
 
 			var recipes = await _dapper.LoadDataAsync<RecipeDto>(sql);
 
@@ -55,19 +60,6 @@ namespace Cookbook.Api.Controllers
 			}
 
 			return recipes;
-		}
-
-		[HttpGet("RecipeByIdAsync/{recipeId}")]
-		public async Task<RecipeDto> GetRecipeByIdAsync(int recipeId)
-		{
-			string sql = "EXEC CookbookAppSchema.spRecipes_Get @RecipeId = " + recipeId.ToString();
-
-			var recipe = await _dapper.LoadDataSingleAsync<RecipeDto>(sql);
-
-			var ingredients = await GetIngredients(recipe.RecipeId);
-			recipe.Ingredients = ingredients.ToList();
-
-			return recipe;
 		}
 
 		[HttpPost("AddRecipeAsync")]
@@ -188,6 +180,19 @@ namespace Cookbook.Api.Controllers
 			{
 				return StatusCode(500, $"Failed to delete recipe: {ex.Message}");
 			}
+		}
+
+		//[HttpGet("RecipeByIdAsync/{recipeId}")]
+		private async Task<RecipeDto> GetRecipeByIdAsync(int recipeId)
+		{
+			string sql = "EXEC CookbookAppSchema.spRecipes_Get @RecipeId = " + recipeId.ToString();
+
+			var recipe = await _dapper.LoadDataSingleAsync<RecipeDto>(sql);
+
+			var ingredients = await GetIngredients(recipe.RecipeId);
+			recipe.Ingredients = ingredients.ToList();
+
+			return recipe;
 		}
 
 		private async Task<IActionResult> DeleteIngredientAsync(int ingredientId) // перенести в хелпер
