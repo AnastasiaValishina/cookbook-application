@@ -1,4 +1,5 @@
 ﻿using Cookbook.Api.Data;
+using Cookbook.Api.Models;
 using Cookbook.Models.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,24 +16,20 @@ namespace Cookbook.Api.Controllers
 			_dapper = new DataContextDapper(config);
 		}
 
-		[HttpPost("AddUser")]
-		public IActionResult AddUser(UserToAddDto user)
+		[HttpPut("UpsertUser")]
+		public IActionResult UpsertUser(User user)
 		{
-			string sql = @"
-            INSERT INTO CookbookAppSchema.Users(
-                [UserName],
-                [Email]
-            ) VALUES (" +
-					"'" + user.UserName +
-					"', '" + user.Email +
-				"')";
+			string sql = @"EXEC TutorialAppSchema.spUser_Upsert
+            @UserName = '" + user.UserName +
+				"', @Email = '" + user.Email +
+				"', @UserId = " + user.UserId;
 
 			if (_dapper.ExecuteSql(sql))
 			{
 				return Ok();
 			}
 
-			throw new Exception("Failed to Add User");
+			throw new Exception("Failed to Update User");
 		}
 	}
 }
