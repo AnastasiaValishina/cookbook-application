@@ -32,13 +32,15 @@ namespace Cookbook.Api.Controllers
 
 		[AllowAnonymous]
 		[HttpPost("Register")]
-		public IActionResult Register(UserForRegistrationDto userForRegistration)
+		public async Task<IActionResult> Register(UserForRegistrationDto userForRegistration)
 		{
 			if (userForRegistration.Password == userForRegistration.PasswordConfirm)
 			{
 				string sqlCheckUserExists = "SELECT Email FROM CookbookAppSchema.Auth WHERE Email = '" + userForRegistration.Email + "'";
 
-				IEnumerable<string> existingUsers = _dapper.LoadData<string>(sqlCheckUserExists);
+				Console.WriteLine(sqlCheckUserExists);
+
+				IEnumerable<string> existingUsers = await _dapper.LoadDataAsync<string>(sqlCheckUserExists);
 
 				if (existingUsers.Count() == 0)
 				{
@@ -90,14 +92,14 @@ namespace Cookbook.Api.Controllers
 
 		[AllowAnonymous]
 		[HttpPost("Login")]
-		public IActionResult Login(UserForLoginDto userForLogin)
+		public async Task<IActionResult> Login(UserForLoginDto userForLogin)
 		{
 			string sqlForHashAndSalt = @"SELECT 
 				[PasswordHash],
 				[PasswordSalt] 
 					FROM CookbookAppSchema.Auth WHERE Email = '" + userForLogin.Email + "'";
 
-			UserForLoginConfirmationDto userForConfirmation = _dapper.LoadDataSingle<UserForLoginConfirmationDto>(sqlForHashAndSalt);
+			UserForLoginConfirmationDto userForConfirmation = await _dapper.LoadDataSingleAsync<UserForLoginConfirmationDto>(sqlForHashAndSalt);
 
 			byte[] passwordHash = _authHelper.GetPasswordHash(userForLogin.Password, userForConfirmation.PasswordSalt);
 
@@ -109,7 +111,7 @@ namespace Cookbook.Api.Controllers
 
 			string userIdSql = "SELECT UserId FROM CookbookAppSchema.Users WHERE Email = '" + userForLogin.Email + "'";
 
-			int userId = _dapper.LoadDataSingle<int>(userIdSql);
+			int userId = await _dapper.LoadDataSingleAsync<int>(userIdSql);
 
 			return Ok(new Dictionary<string, string> {
 				{"token", _authHelper.CreateToken(userId) }
@@ -121,8 +123,7 @@ namespace Cookbook.Api.Controllers
 		{
 			string userId = User.FindFirst("userId")?.Value + "";
 
-			string userIdSql = "SELECT UserId FROM CookbookAppSchema.Users WHERE UserId = "
-				+ userId;
+			string userIdSql = "SELECT UserId FROM CookbookAppSchema.Users WHERE UserId = " + userId.ToString();
 
 			int userIdFromDb = _dapper.LoadDataSingle<int>(userIdSql);
 

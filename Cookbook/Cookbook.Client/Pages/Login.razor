@@ -1,0 +1,27 @@
+﻿@page "/Login"
+@inherits LoginBase
+
+<h3>Login</h3>
+
+<div>
+	<label for="notes">Email:</label>
+	<input type="text" id="email" name="email" @bind="@Email">
+</div>
+<br>
+
+<div>
+	<label for="notes">Password:</label>
+	<input type="text" id="password" name="password" @bind="@Password">
+</div>
+<br>
+
+
+<div>
+	<button class="btn btn-success"
+			@onclick="() => (LoginUser_Click(new UserForLoginDto {					
+					Email = Email,
+					Password = Password
+                }))">
+		<b>Login</b>
+	</button>
+</div>

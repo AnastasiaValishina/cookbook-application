@@ -23,7 +23,7 @@ namespace Cookbook.Client.Pages
 			try
 			{
 				await AuthService.RegisterUser(userForRegistration);
-				NavigationManager.NavigateTo($"/");
+				NavigationManager.NavigateTo($"/Login");
 			}
 			catch (Exception ex)
 			{
