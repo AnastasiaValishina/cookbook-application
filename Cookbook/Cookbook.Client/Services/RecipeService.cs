@@ -18,11 +18,11 @@ namespace Cookbook.Client.Services
 		{
 			try
 			{
-				var response = await _httpClient.GetAsync($"Recipe/MyRecipes/");
+				var response = await _httpClient.GetAsync("Recipe/MyRecipes/0");
 
 				if (response.IsSuccessStatusCode)
 				{
-					if(response.StatusCode == System.Net.HttpStatusCode.NoContent)
+					if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
 					{
 						return Enumerable.Empty<RecipeDto>();
 					}
@@ -46,7 +46,7 @@ namespace Cookbook.Client.Services
 		{
 			try
 			{
-				var response = await _httpClient.GetAsync($"Recipe/RecipeByIdAsync/{id}");
+				var response = await _httpClient.GetAsync($"Recipe/MyRecipes/{id}");
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -55,7 +55,8 @@ namespace Cookbook.Client.Services
 						return default(RecipeDto);
 					}
 
-					return await response.Content.ReadFromJsonAsync<RecipeDto>();
+					var recipes = await response.Content.ReadFromJsonAsync<List<RecipeDto>>();
+					return recipes.FirstOrDefault();
 				}
 				else
 				{

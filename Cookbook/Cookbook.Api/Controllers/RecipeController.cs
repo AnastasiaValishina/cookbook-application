@@ -23,26 +23,8 @@ namespace Cookbook.Api.Controllers
 					return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
 				}*/
 
-		[HttpGet("RecipesBySearchParam/{searchParam}")]
-		public async Task<IEnumerable<RecipeDto>> GetRecipesBySearchParam(string searchParam)
-		{
-			string sql = @"EXEC CookbookAppSchema.spRecipes_GetBySearch 
-							@SearchParam = '" + searchParam + 
-							"', @UserId = " + this.User.FindFirst("userId")?.Value;
-
-			var recipes = await _dapper.LoadDataAsync<RecipeDto>(sql);
-
-			foreach (var recipe in recipes)
-			{
-				var ingredients = await GetIngredients(recipe.RecipeId);
-				recipe.Ingredients = ingredients.ToList();
-			}
-
-			return recipes;
-		}
-
 		[HttpGet("MyRecipes/{recipeId}")]
-		public async Task<IEnumerable<RecipeDto>> GetMyRecipesAsync(int recipeId = 0)
+		public async Task<ActionResult<IEnumerable<RecipeDto>>> GetMyRecipesAsync(int recipeId = 0)
 		{
 			string sql = "EXEC CookbookAppSchema.spRecipes_Get @UserId = " + this.User.FindFirst("userId")?.Value;
 
@@ -53,13 +35,40 @@ namespace Cookbook.Api.Controllers
 
 			var recipes = await _dapper.LoadDataAsync<RecipeDto>(sql);
 
-			foreach (var recipe in recipes)
+			if (recipes != null)
 			{
-				var ingredients = await GetIngredients(recipe.RecipeId);
-				recipe.Ingredients = ingredients.ToList();
-			}
+				foreach (var recipe in recipes)
+				{
+					var ingredients = await GetIngredients(recipe.RecipeId);
+					recipe.Ingredients = ingredients.ToList();
+				}
 
-			return recipes;
+				return Ok(recipes);
+			}
+			return BadRequest("Failed to find recipe");
+		}
+
+		[HttpGet("RecipesBySearchParam/{searchParam}")]
+		public async Task<ActionResult<IEnumerable<RecipeDto>>> GetRecipesBySearchParam(string searchParam)
+		{
+			string sql = @"EXEC CookbookAppSchema.spRecipes_GetBySearch 
+							@SearchParam = '" + searchParam +
+			"', @UserId = " + this.User.FindFirst("userId")?.Value;
+
+			var recipes = await _dapper.LoadDataAsync<RecipeDto>(sql);
+
+			if (recipes != null)
+			{
+				foreach (var recipe in recipes)
+				{
+					var ingredients = await GetIngredients(recipe.RecipeId);
+					recipe.Ingredients = ingredients.ToList();
+				}
+
+				return Ok(recipes);
+
+			}
+			return BadRequest("Failed to find recipe");
 		}
 
 		[HttpPost("AddRecipeAsync")]
@@ -68,7 +77,7 @@ namespace Cookbook.Api.Controllers
 			string sql = @"EXEC CookbookAppSchema.spRecipe_Add 
 				@UserId = " + this.User.FindFirst("userId")?.Value
 				+ ", @Title = '" + recipe.Title
-				+ "', @Notes = '" + recipe.Notes 
+				+ "', @Notes = '" + recipe.Notes
 				+ "', @CategoryId = " + recipe.CategoryId
 				+ ", @Source = '" + recipe.Source + "';";
 
@@ -94,98 +103,81 @@ namespace Cookbook.Api.Controllers
 				{
 					return Ok(createdRecipe);
 				}
-				else
-				{
-					return BadRequest("Failed to retrieve created recipe");
-				}
+
+				return BadRequest("Failed to retrieve created recipe");
 			}
-			else
-			{
-				return BadRequest("Failed to add recipe");
-			}
+			return BadRequest("Failed to add recipe");
 		}
 
 		[HttpPut("UpdateAsync")]
 		public async Task<ActionResult> UpdateAsync(RecipeToEditDto recipeToEdit)
 		{
-			try
-			{
-				// update recipe
-				string updateSql = @"EXEC CookbookAppSchema.spRecipes_Update 
+			// update recipe
+			string updateSql = @"EXEC CookbookAppSchema.spRecipes_Update 
 				@UserId = " + this.User.FindFirst("userId")?.Value +
-					", @RecipeId = " + recipeToEdit.RecipeId.ToString() +
-					", @Title = '" + recipeToEdit.Title +
-					"', @Notes = '" + recipeToEdit.Notes +
-					"', @CategoryId = " + recipeToEdit.CategoryId.ToString() +
-					", @Source = '" + recipeToEdit.Source + "'";
+			", @RecipeId = " + recipeToEdit.RecipeId.ToString() +
+				", @Title = '" + recipeToEdit.Title +
+				"', @Notes = '" + recipeToEdit.Notes +
+				"', @CategoryId = " + recipeToEdit.CategoryId.ToString() +
+				", @Source = '" + recipeToEdit.Source + "'";
 
-				if (await _dapper.ExecuteSqlAsync(updateSql))
-				{
-					// delete ingredients
-					var oldIngredients = await GetIngredients(recipeToEdit.RecipeId);
-
-					List<int> newIds = new List<int>();
-					foreach (var newIng in recipeToEdit.Ingredients)
-					{
-						newIds.Add(newIng.IngredientId);
-					}
-					foreach (var ingredient in oldIngredients)
-					{
-						if (!newIds.Contains(ingredient.IngredientId))
-							await DeleteIngredientAsync(ingredient.IngredientId);
-					}
-
-					// update/add ingredients 
-					foreach (var ingredient in recipeToEdit.Ingredients)
-					{
-						string ingSql = @"EXEC CookbookAppSchema.spIngredient_Upsert 
-					@IngredientId = " + ingredient.IngredientId +
-							", @RecipeId = " + recipeToEdit.RecipeId +
-							", @Name = '" + ingredient.Name +
-							"', @Qty = " + ingredient.Qty +
-							", @Unit = '" + ingredient.Unit + "'";
-
-						await _dapper.ExecuteSqlAsync(ingSql);
-					}
-					return Ok();
-				}
-				return BadRequest("It is not your recipe to update!");
-			}
-			catch (Exception ex)
+			if (await _dapper.ExecuteSqlAsync(updateSql))
 			{
-				return StatusCode(500, $"Failed to update recipe: {ex.Message}");
+				// delete ingredients
+				var oldIngredients = await GetIngredients(recipeToEdit.RecipeId);
+
+				List<int> newIds = new List<int>();
+				foreach (var newIng in recipeToEdit.Ingredients)
+				{
+					newIds.Add(newIng.IngredientId);
+				}
+				foreach (var ingredient in oldIngredients)
+				{
+					if (!newIds.Contains(ingredient.IngredientId))
+						await DeleteIngredientAsync(ingredient.IngredientId);
+				}
+
+				// update/add ingredients 
+				foreach (var ingredient in recipeToEdit.Ingredients)
+				{
+					string ingSql = @"EXEC CookbookAppSchema.spIngredient_Upsert 
+							@IngredientId = " + ingredient.IngredientId +
+						", @RecipeId = " + recipeToEdit.RecipeId +
+						", @Name = '" + ingredient.Name +
+						"', @Qty = " + ingredient.Qty +
+						", @Unit = '" + ingredient.Unit + "'";
+
+					await _dapper.ExecuteSqlAsync(ingSql);
+				}
+				return Ok();
 			}
+			return BadRequest("Failed to update the recipe!");
 		}
 
 		[HttpDelete("DeleteRecipeAsync/{recipeId}")]
 		public async Task<ActionResult<RecipeDto>> DeleteRecipeAsync(int recipeId)
 		{
-			try
-			{
-				var recipeToDelete = await GetRecipeByIdAsync(recipeId);
+			var recipeToDelete = await GetRecipeByIdAsync(recipeId);
 
-				if (recipeToDelete != null)
+			if (recipeToDelete != null)
+			{
+				string? userId = this.User.FindFirst("userId")?.Value;
+				string sql = $"EXEC CookbookAppSchema.spRecipes_Delete @RecipeId = {recipeId}, @UserId = {userId}";
+
+				if (await _dapper.ExecuteSqlAsync(sql))
 				{
-					string? userId = this.User.FindFirst("userId")?.Value;
-					string sql = $"EXEC CookbookAppSchema.spRecipes_Delete @RecipeId = {recipeId}, @UserId = {userId}";					
-
-					if (await _dapper.ExecuteSqlAsync(sql))
-					{
-						return Ok(recipeToDelete);
-					}
+					return Ok(recipeToDelete);
 				}
-				return NotFound();
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, $"Failed to delete recipe: {ex.Message}");
-			}
+			return BadRequest("Failed to delete the recipe!");
 		}
 
 		//[HttpGet("RecipeByIdAsync/{recipeId}")]
 		private async Task<RecipeDto> GetRecipeByIdAsync(int recipeId)
 		{
-			string sql = "EXEC CookbookAppSchema.spRecipes_Get @RecipeId = " + recipeId.ToString();
+			string sql = "@EXEC CookbookAppSchema.spRecipes_Get " +
+				"@UserId = " + this.User.FindFirst("userId")?.Value + 
+				", @RecipeId = " + recipeId.ToString();
 
 			var recipe = await _dapper.LoadDataSingleAsync<RecipeDto>(sql);
 
@@ -197,21 +189,13 @@ namespace Cookbook.Api.Controllers
 
 		private async Task<IActionResult> DeleteIngredientAsync(int ingredientId) // перенести в хелпер
 		{
-			try
-			{
-				string sql = "EXEC CookbookAppSchema.spIngredient_Delete @IngredientId = " + ingredientId;
+			string sql = "EXEC CookbookAppSchema.spIngredient_Delete @IngredientId = " + ingredientId;
 
-				if (await _dapper.ExecuteSqlAsync(sql))
-				{
-					return Ok();
-				}
-
-				return NotFound();
-			}
-			catch (Exception ex)
+			if (await _dapper.ExecuteSqlAsync(sql))
 			{
-				return StatusCode(500, $"Failed to delete ingredient: {ex.Message}");
+				return Ok();
 			}
+			return BadRequest("Failed to delete the indredient!");
 		}
 
 		private async Task<IEnumerable<IngredientDto>> GetIngredients(int recipeId) // перенести в хелпер
