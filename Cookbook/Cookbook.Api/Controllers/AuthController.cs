@@ -52,21 +52,24 @@ namespace Cookbook.Api.Controllers
 					
 					byte[] passwordHash = _authHelper.GetPasswordHash(userForRegistration.Password, passwordSalt);
 
-					string sqlAddAuth = @"INSERT INTO CookbookAppSchema.Auth (
-						[Email],
-						[PasswordHash],
-						[PasswordSalt]) VALUES ('" + userForRegistration.Email +
-						"', @PasswordHash, @PasswordSalt)";
+					string sqlAddAuth = @"EXEC CookbookAppSchema.spRegistration_Upsert 
+						@Email = @EmailParam, 
+						@PasswordHash = @PasswordHashParam, 
+						@PasswordSalt = @PasswordSaltParam)";
 
 					List<SqlParameter> sqlParameters = new List<SqlParameter>();
 
-					SqlParameter passwordSaltParameter = new SqlParameter("@PasswordSalt", SqlDbType.VarBinary);
-					passwordSaltParameter.Value = passwordSalt;
-					SqlParameter passwordHashParameter = new SqlParameter("@PasswordHash", SqlDbType.VarBinary);
-					passwordHashParameter.Value = passwordHash;
+					SqlParameter emailParameter = new SqlParameter("@EmailParam", SqlDbType.VarChar);
+					emailParameter.Value = userForRegistration.Email;
+					sqlParameters.Add(emailParameter);
 
-					sqlParameters.Add(passwordSaltParameter);
+					SqlParameter passwordHashParameter = new SqlParameter("@PasswordHashParam", SqlDbType.VarBinary);
+					passwordHashParameter.Value = passwordHash;
 					sqlParameters.Add(passwordHashParameter);
+
+					SqlParameter passwordSaltParameter = new SqlParameter("@PasswordSaltParam", SqlDbType.VarBinary);
+					passwordSaltParameter.Value = passwordSalt;
+					sqlParameters.Add(passwordSaltParameter);
 
 					if (_dapper.ExecuteSqlWithParameters(sqlAddAuth, sqlParameters))
 					{

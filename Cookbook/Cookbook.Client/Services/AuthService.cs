@@ -14,7 +14,6 @@ namespace Cookbook.Client.Services
             _httpClient = httpClient;
         }
 
-
         public async Task RegisterUser(UserForRegistrationDto userForRegistration)
         {
             try

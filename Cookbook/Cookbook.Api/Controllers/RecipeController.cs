@@ -175,9 +175,9 @@ namespace Cookbook.Api.Controllers
 		//[HttpGet("RecipeByIdAsync/{recipeId}")]
 		private async Task<RecipeDto> GetRecipeByIdAsync(int recipeId)
 		{
-			string sql = "@EXEC CookbookAppSchema.spRecipes_Get " +
-				"@UserId = " + this.User.FindFirst("userId")?.Value + 
-				", @RecipeId = " + recipeId.ToString();
+			string sql = @"EXEC CookbookAppSchema.spRecipes_Get 
+					@UserId = " + this.User.FindFirst("userId")?.Value + 
+					", @RecipeId = " + recipeId.ToString();
 
 			var recipe = await _dapper.LoadDataSingleAsync<RecipeDto>(sql);
 
