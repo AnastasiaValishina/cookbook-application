@@ -1,0 +1,42 @@
+﻿@page "/Register"
+@inherits RegistrationBase
+
+<h3>Registration</h3>
+
+<div>
+	<label for="notes">Name:</label>
+	<input type="text" id="username" name="username" @bind="@UserName">
+</div>
+<br>
+
+<div>
+	<label for="notes">Email:</label>
+	<input type="text" id="email" name="email" @bind="@Email">
+</div>
+<br>
+
+<div>
+	<label for="notes">Password:</label>
+	<input type="text" id="password" name="password" @bind="@Password">
+</div>
+<br>
+
+<div>
+	<label for="notes">Confirm your password:</label>
+	<input type="text" id="passwordconfirm" name="passwordconfirm" @bind="@PasswordConfirm">
+</div>
+<br>
+
+<div>
+	<button class="btn btn-success"
+			@onclick="() => (RegisterUser_Click(new UserForRegistrationDto {
+					UserName = UserName,
+					Email = Email,
+					Password = Password,
+					PasswordConfirm	= PasswordConfirm
+                }))">
+		<b>Add</b>
+	</button>
+</div>
+
+
