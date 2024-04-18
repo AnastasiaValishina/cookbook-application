@@ -1,11 +1,10 @@
 ﻿using Cookbook.Api.Data;
 using Cookbook.Api.Helpers;
 using Cookbook.Models.Dtos;
+using Dapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using System.Data;
-using System.Security.Cryptography;
 
 namespace Cookbook.Api.Controllers
 {
@@ -38,48 +37,29 @@ namespace Cookbook.Api.Controllers
 			{
 				string sqlCheckUserExists = "SELECT Email FROM CookbookAppSchema.Auth WHERE Email = '" + userForRegistration.Email + "'";
 
-				Console.WriteLine(sqlCheckUserExists);
-
 				IEnumerable<string> existingUsers = await _dapper.LoadDataAsync<string>(sqlCheckUserExists);
 
 				if (existingUsers.Count() == 0)
 				{
-					byte[] passwordSalt = new byte[128 / 8];
-					using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+					UserForLoginDto userForSetPassword = new UserForLoginDto()
 					{
-						rng.GetNonZeroBytes(passwordSalt);
-					}
-					
-					byte[] passwordHash = _authHelper.GetPasswordHash(userForRegistration.Password, passwordSalt);
+						Email = userForRegistration.Email,
+						Password = userForRegistration.Password
+					};
 
-					string sqlAddAuth = @"EXEC CookbookAppSchema.spRegistration_Upsert 
-						@Email = @EmailParam, 
-						@PasswordHash = @PasswordHashParam, 
-						@PasswordSalt = @PasswordSaltParam)";
-
-					List<SqlParameter> sqlParameters = new List<SqlParameter>();
-
-					SqlParameter emailParameter = new SqlParameter("@EmailParam", SqlDbType.VarChar);
-					emailParameter.Value = userForRegistration.Email;
-					sqlParameters.Add(emailParameter);
-
-					SqlParameter passwordHashParameter = new SqlParameter("@PasswordHashParam", SqlDbType.VarBinary);
-					passwordHashParameter.Value = passwordHash;
-					sqlParameters.Add(passwordHashParameter);
-
-					SqlParameter passwordSaltParameter = new SqlParameter("@PasswordSaltParam", SqlDbType.VarBinary);
-					passwordSaltParameter.Value = passwordSalt;
-					sqlParameters.Add(passwordSaltParameter);
-
-					if (_dapper.ExecuteSqlWithParameters(sqlAddAuth, sqlParameters))
+					if (_authHelper.SetPassword(userForSetPassword))
 					{
-						string sqlAddUser = @"INSERT INTO CookbookAppSchema.Users(
+						string sqlAddUser = @"EXEC CookbookAppSchema.spUser_Upsert
+							@UserName = '" + userForRegistration.UserName +
+							"', @Email = '" + userForRegistration.Email + "'";
+
+/*						string sqlAddUser = @"INSERT INTO CookbookAppSchema.Users(
 							[UserName],
 							[Email]
 								) VALUES (" +
 							"'" + userForRegistration.UserName +
 							"', '" + userForRegistration.Email +
-							"')";
+							"')";*/
 
 						if (_dapper.ExecuteSql(sqlAddUser))
 							return Ok();
@@ -93,16 +73,32 @@ namespace Cookbook.Api.Controllers
 			throw new Exception("Password do not match!");
 		}
 
+		[HttpPut("ResetPassword")]
+		public IActionResult ResetPassword(UserForLoginDto userForSetPassword) // add new model with password and password confirm
+		{
+			if (_authHelper.SetPassword(userForSetPassword))
+			{
+				return Ok();
+			}
+			throw new Exception("Failed to update password!");
+		}
+
 		[AllowAnonymous]
 		[HttpPost("Login")]
 		public async Task<IActionResult> Login(UserForLoginDto userForLogin)
 		{
-			string sqlForHashAndSalt = @"SELECT 
-				[PasswordHash],
-				[PasswordSalt] 
-					FROM CookbookAppSchema.Auth WHERE Email = '" + userForLogin.Email + "'";
+			string sqlForHashAndSalt = @"EXEC CookbookAppSchema.spLoginConfirmation_Get @Email = @EmailParam";
 
-			UserForLoginConfirmationDto userForConfirmation = await _dapper.LoadDataSingleAsync<UserForLoginConfirmationDto>(sqlForHashAndSalt);
+			DynamicParameters sqlParameters = new DynamicParameters();
+
+			sqlParameters.Add("@EmailParam", userForLogin.Email, DbType.String);
+
+/*			SqlParameter emailParameter = new SqlParameter("@EmailParam", SqlDbType.VarChar);
+			emailParameter.Value = userForLogin.Email;
+			sqlParameters.Add(emailParameter);*/
+
+			UserForLoginConfirmationDto userForConfirmation = await _dapper
+				.LoadDataSingleWithParamsAsync<UserForLoginConfirmationDto>(sqlForHashAndSalt, sqlParameters);
 
 			byte[] passwordHash = _authHelper.GetPasswordHash(userForLogin.Password, userForConfirmation.PasswordSalt);
 
@@ -122,7 +118,7 @@ namespace Cookbook.Api.Controllers
 		}
 
 		[HttpGet("RefreshToken")]
-		public IActionResult RefreshToken() 
+		public IActionResult RefreshToken()
 		{
 			string userId = User.FindFirst("userId")?.Value + "";
 
@@ -133,6 +129,6 @@ namespace Cookbook.Api.Controllers
 			return Ok(new Dictionary<string, string> {
 				{"token", _authHelper.CreateToken(userIdFromDb) }
 			});
-		}		
+		}
 	}
 }

@@ -1,7 +1,14 @@
-﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+﻿using Cookbook.Api.Data;
+using Cookbook.Models.Dtos;
+using Dapper;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Cookbook.Api.Helpers
@@ -9,9 +16,12 @@ namespace Cookbook.Api.Helpers
 	public class AuthHelper
 	{
 		private readonly IConfiguration _config;
-        public AuthHelper(IConfiguration config)
+		private readonly DataContextDapper _dapper;
+
+		public AuthHelper(IConfiguration config)
         {
 			_config = config;
+			_dapper = new DataContextDapper(config);
 		}
 
 		public byte[] GetPasswordHash(string password, byte[] passwordSalt)
@@ -59,5 +69,28 @@ namespace Cookbook.Api.Helpers
 			return tokenHandler.WriteToken(token);
 		}
 
+		public bool SetPassword(UserForLoginDto userForSetPassword)
+		{
+			byte[] passwordSalt = new byte[128 / 8];
+			using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+			{
+				rng.GetNonZeroBytes(passwordSalt);
+			}
+
+			byte[] passwordHash = GetPasswordHash(userForSetPassword.Password, passwordSalt);
+
+			string sqlAddAuth = @"EXEC CookbookAppSchema.spRegistration_Upsert 
+						@Email = @EmailParam, 
+						@PasswordHash = @PasswordHashParam, 
+						@PasswordSalt = @PasswordSaltParam";
+
+			DynamicParameters sqlParameters = new DynamicParameters();
+
+			sqlParameters.Add("@EmailParam", userForSetPassword.Email, DbType.String);
+			sqlParameters.Add("@PasswordHashParam", passwordHash, DbType.Binary);
+			sqlParameters.Add("@PasswordSaltParam", passwordSalt, DbType.Binary);
+
+			return _dapper.ExecuteSqlWithParameters(sqlAddAuth, sqlParameters);
+		}
 	}
 }

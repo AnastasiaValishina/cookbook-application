@@ -40,25 +40,28 @@ namespace Cookbook.Api.Data
 			return dbConnection.Execute(sql);
 		}
 
-		public bool ExecuteSqlWithParameters(string sql, List<SqlParameter> parameters)
+		public bool ExecuteSqlWithParameters(string sql, DynamicParameters parameters)
 		{
-			SqlCommand commandWithParams = new SqlCommand(sql);
+			IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING));
+			return dbConnection.Execute(sql, parameters) > 0;
 
-            foreach (SqlParameter parameter in parameters)
-            {
-				commandWithParams.Parameters.Add(parameter);
-            }
+			/*			SqlCommand commandWithParams = new SqlCommand(sql);
 
-			SqlConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING));
-			dbConnection.Open();
+						foreach (SqlParameter parameter in parameters)
+						{
+							commandWithParams.Parameters.Add(parameter);
+						}
 
-			commandWithParams.Connection = dbConnection;
+						SqlConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING));
+						dbConnection.Open();
 
-			int rowsAffected = commandWithParams.ExecuteNonQuery();
+						commandWithParams.Connection = dbConnection;
 
-			dbConnection.Close();
+						int rowsAffected = commandWithParams.ExecuteNonQuery();
 
-			return rowsAffected > 0;
+						dbConnection.Close();
+
+						return rowsAffected > 0;*/
 		}
 
 		public async Task<IEnumerable<T>> LoadDataAsync<T>(string sql)
@@ -90,6 +93,22 @@ namespace Cookbook.Api.Data
 			using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING)))
 			{
 				return await dbConnection.ExecuteScalarAsync<int>(sql);
+			}
+		}
+
+		public async Task<IEnumerable<T>> LoadDataWithParamsAsync<T>(string sql, DynamicParameters parameters)
+		{
+			using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING)))
+			{
+				return await dbConnection.QueryAsync<T>(sql, parameters);
+			}
+		}
+
+		public async Task<T> LoadDataSingleWithParamsAsync<T>(string sql, DynamicParameters parameters)
+		{
+			using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING)))
+			{
+				return await dbConnection.QuerySingleAsync<T>(sql, parameters);
 			}
 		}
 	}
