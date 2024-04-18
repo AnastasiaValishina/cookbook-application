@@ -44,24 +44,14 @@ namespace Cookbook.Api.Data
 		{
 			IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING));
 			return dbConnection.Execute(sql, parameters) > 0;
+		}
 
-			/*			SqlCommand commandWithParams = new SqlCommand(sql);
-
-						foreach (SqlParameter parameter in parameters)
-						{
-							commandWithParams.Parameters.Add(parameter);
-						}
-
-						SqlConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING));
-						dbConnection.Open();
-
-						commandWithParams.Connection = dbConnection;
-
-						int rowsAffected = commandWithParams.ExecuteNonQuery();
-
-						dbConnection.Close();
-
-						return rowsAffected > 0;*/
+		public async Task<bool> ExecuteSqlWithParametersAsync(string sql, DynamicParameters parameters)
+		{
+			using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING)))
+			{
+				return await dbConnection.ExecuteAsync(sql, parameters) > 0;
+			}
 		}
 
 		public async Task<IEnumerable<T>> LoadDataAsync<T>(string sql)
@@ -93,6 +83,14 @@ namespace Cookbook.Api.Data
 			using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING)))
 			{
 				return await dbConnection.ExecuteScalarAsync<int>(sql);
+			}
+		}
+
+		public async Task<int> ExecuteScalarWithParamsAsync(string sql, DynamicParameters parameters)
+		{
+			using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING)))
+			{
+				return await dbConnection.ExecuteScalarAsync<int>(sql, parameters);
 			}
 		}
 

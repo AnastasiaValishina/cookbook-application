@@ -41,7 +41,7 @@ namespace Cookbook.Api.Controllers
 		[HttpDelete("DeleteUser/{userId}")]
 		public IActionResult DeleteUser(int userId)
 		{
-			string sql = @"CookbookAppSchema.spUser_Delete
+			string sql = @"EXEC CookbookAppSchema.spUser_Delete
             @UserId = @UserIdParameter";
 
 			DynamicParameters sqlParameters = new DynamicParameters();
