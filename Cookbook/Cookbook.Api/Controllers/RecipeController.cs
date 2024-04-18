@@ -1,5 +1,5 @@
 ﻿using Cookbook.Api.Data;
-using Cookbook.Api.Models;
+using Cookbook.Api.Helpers;
 using Cookbook.Models.Dtos;
 using Dapper;
 using Microsoft.AspNetCore.Authorization;
@@ -14,10 +14,12 @@ namespace Cookbook.Api.Controllers
 	public class RecipeController : ControllerBase
 	{
 		private readonly DataContextDapper _dapper;
+		private readonly RecipeHelper _recipeHelper;
 
 		public RecipeController(IConfiguration config)
 		{
 			_dapper = new DataContextDapper(config);
+			_recipeHelper = new RecipeHelper(config);
 		}
 		/*
 				[HttpGet("Connection")]
@@ -46,7 +48,7 @@ namespace Cookbook.Api.Controllers
 			{
 				foreach (var recipe in recipes)
 				{
-					var ingredients = await GetIngredients(recipe.RecipeId);
+					var ingredients = await _recipeHelper.GetIngredients(recipe.RecipeId);
 					recipe.Ingredients = ingredients.ToList();
 				}
 
@@ -72,7 +74,7 @@ namespace Cookbook.Api.Controllers
 			{
 				foreach (var recipe in recipes)
 				{
-					var ingredients = await GetIngredients(recipe.RecipeId);
+					var ingredients = await _recipeHelper.GetIngredients(recipe.RecipeId);
 					recipe.Ingredients = ingredients.ToList();
 				}
 
@@ -120,7 +122,7 @@ namespace Cookbook.Api.Controllers
 					await _dapper.ExecuteSqlWithParametersAsync(ingredientSql, ingredientSqlParams);
 				}
 
-				RecipeDto createdRecipe = await GetRecipeByIdAsync(recipeId);
+				RecipeDto createdRecipe = await _recipeHelper.GetRecipeByIdAsync(recipeId, this.User.FindFirst("userId")?.Value);
 
 				if (createdRecipe != null)
 				{
@@ -155,7 +157,7 @@ namespace Cookbook.Api.Controllers
 			if (await _dapper.ExecuteSqlWithParametersAsync(updateSql, sqlParameters))
 			{
 				// delete ingredients
-				var oldIngredients = await GetIngredients(recipeToEdit.RecipeId);
+				var oldIngredients = await _recipeHelper.GetIngredients(recipeToEdit.RecipeId);
 
 				List<int> newIds = new List<int>();
 				foreach (var newIng in recipeToEdit.Ingredients)
@@ -165,7 +167,7 @@ namespace Cookbook.Api.Controllers
 				foreach (var ingredient in oldIngredients)
 				{
 					if (!newIds.Contains(ingredient.IngredientId))
-						await DeleteIngredientAsync(ingredient.IngredientId);
+						await _recipeHelper.DeleteIngredientAsync(ingredient.IngredientId);
 				}
 
 				// update/add ingredients 
@@ -195,7 +197,7 @@ namespace Cookbook.Api.Controllers
 		[HttpDelete("DeleteRecipeAsync/{recipeId}")]
 		public async Task<ActionResult<RecipeDto>> DeleteRecipeAsync(int recipeId)
 		{
-			var recipeToDelete = await GetRecipeByIdAsync(recipeId);
+			var recipeToDelete = await _recipeHelper.GetRecipeByIdAsync(recipeId, this.User.FindFirst("userId")?.Value);
 
 			if (recipeToDelete != null)
 			{
@@ -213,48 +215,6 @@ namespace Cookbook.Api.Controllers
 				}
 			}
 			return BadRequest("Failed to delete the recipe!");
-		}
-
-		private async Task<RecipeDto> GetRecipeByIdAsync(int recipeId)
-		{
-			string sql = @"EXEC CookbookAppSchema.spRecipes_Get 
-					@UserId = @UserIdParameter,
-					@RecipeId = @RecipeIdParameter"; 
-
-			DynamicParameters sqlParameters = new DynamicParameters();
-			sqlParameters.Add("@UserIdParameter", this.User.FindFirst("userId")?.Value, DbType.Int32);
-			sqlParameters.Add("@RecipeIdParameter", recipeId, DbType.Int32);
-
-			var recipe = await _dapper.LoadDataSingleWithParamsAsync<RecipeDto>(sql, sqlParameters);
-
-			var ingredients = await GetIngredients(recipe.RecipeId);
-			recipe.Ingredients = ingredients.ToList();
-
-			return recipe;
-		}
-
-		private async Task<IActionResult> DeleteIngredientAsync(int ingredientId) // перенести в хелпер
-		{
-			string sql = "EXEC CookbookAppSchema.spIngredient_Delete @IngredientId = @IngredientIdParameter";
-
-			DynamicParameters ingredientSqlParams = new DynamicParameters();
-			ingredientSqlParams.Add("@IngredientIdParameter", ingredientId, DbType.Int32);
-
-			if (await _dapper.ExecuteSqlWithParametersAsync(sql, ingredientSqlParams))
-			{
-				return Ok();
-			}
-			return BadRequest("Failed to delete the indredient!");
-		}
-
-		private async Task<IEnumerable<IngredientDto>> GetIngredients(int recipeId) // перенести в хелпер
-		{
-			string iSql = "EXEC CookbookAppSchema.spIngredients_Get @RecipeId = @RecipeIdParameter";
-
-			DynamicParameters ingredientSqlParams = new DynamicParameters();
-			ingredientSqlParams.Add("@RecipeIdParameter", recipeId, DbType.Int32);
-
-			return await _dapper.LoadDataWithParamsAsync<IngredientDto>(iSql, ingredientSqlParams);
 		}
 	}
 }

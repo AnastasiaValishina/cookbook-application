@@ -2,8 +2,6 @@
 using Cookbook.Models.Dtos;
 using Dapper;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;

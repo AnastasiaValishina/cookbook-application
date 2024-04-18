@@ -53,14 +53,6 @@ namespace Cookbook.Api.Controllers
 							@UserName = '" + userForRegistration.UserName +
 							"', @Email = '" + userForRegistration.Email + "'";
 
-/*						string sqlAddUser = @"INSERT INTO CookbookAppSchema.Users(
-							[UserName],
-							[Email]
-								) VALUES (" +
-							"'" + userForRegistration.UserName +
-							"', '" + userForRegistration.Email +
-							"')";*/
-
 						if (_dapper.ExecuteSql(sqlAddUser))
 							return Ok();
 
@@ -92,10 +84,6 @@ namespace Cookbook.Api.Controllers
 			DynamicParameters sqlParameters = new DynamicParameters();
 
 			sqlParameters.Add("@EmailParam", userForLogin.Email, DbType.String);
-
-/*			SqlParameter emailParameter = new SqlParameter("@EmailParam", SqlDbType.VarChar);
-			emailParameter.Value = userForLogin.Email;
-			sqlParameters.Add(emailParameter);*/
 
 			UserForLoginConfirmationDto userForConfirmation = await _dapper
 				.LoadDataSingleWithParamsAsync<UserForLoginConfirmationDto>(sqlForHashAndSalt, sqlParameters);
