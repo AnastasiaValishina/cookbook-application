@@ -35,9 +35,12 @@ namespace Cookbook.Api.Controllers
 		{
 			if (userForRegistration.Password == userForRegistration.PasswordConfirm)
 			{
-				string sqlCheckUserExists = "SELECT Email FROM CookbookAppSchema.Auth WHERE Email = '" + userForRegistration.Email + "'";
+				string sqlCheckUserExists = "EXEC CookbookAppSchema.spEmailExists_Get @Email = @EmailParameter";
 
-				IEnumerable<string> existingUsers = await _dapper.LoadDataAsync<string>(sqlCheckUserExists);
+				DynamicParameters sqlUserExistsParameters = new DynamicParameters();
+				sqlUserExistsParameters.Add("@EmailParameter", userForRegistration.Email, DbType.String);
+
+				IEnumerable<string> existingUsers = await _dapper.LoadDataWithParamsAsync<string>(sqlCheckUserExists, sqlUserExistsParameters);
 
 				if (existingUsers.Count() == 0)
 				{
@@ -50,10 +53,14 @@ namespace Cookbook.Api.Controllers
 					if (_authHelper.SetPassword(userForSetPassword))
 					{
 						string sqlAddUser = @"EXEC CookbookAppSchema.spUser_Upsert
-							@UserName = '" + userForRegistration.UserName +
-							"', @Email = '" + userForRegistration.Email + "'";
+							@UserName = @UserNameParameter, 
+							@Email = @EmailParameter";
 
-						if (_dapper.ExecuteSql(sqlAddUser))
+						DynamicParameters sqlAddUserParameters = new DynamicParameters();
+						sqlAddUserParameters.Add("@UserNameParameter", userForRegistration.UserName, DbType.String);
+						sqlAddUserParameters.Add("@EmailParameter", userForRegistration.Email, DbType.String);
+
+						if (await _dapper.ExecuteSqlWithParametersAsync(sqlAddUser, sqlAddUserParameters))
 							return Ok();
 
 						throw new Exception("failed to add user!");
@@ -96,9 +103,12 @@ namespace Cookbook.Api.Controllers
 					return StatusCode(401, "Incorrect password!");
 			}
 
-			string userIdSql = "SELECT UserId FROM CookbookAppSchema.Users WHERE Email = '" + userForLogin.Email + "'";
+			string userIdSql = "EXEC CookbookAppSchema.spUserId_Get @Email = @EmailParameter";
 
-			int userId = await _dapper.LoadDataSingleAsync<int>(userIdSql);
+			DynamicParameters sqlUserIdParameters = new DynamicParameters();
+			sqlUserIdParameters.Add("@EmailParameter", userForLogin.Email, DbType.String);
+
+			int userId = await _dapper.LoadDataSingleWithParamsAsync<int>(userIdSql, sqlUserIdParameters);
 
 			return Ok(new Dictionary<string, string> {
 				{"token", _authHelper.CreateToken(userId) }
@@ -106,13 +116,14 @@ namespace Cookbook.Api.Controllers
 		}
 
 		[HttpGet("RefreshToken")]
-		public IActionResult RefreshToken()
+		public async Task<IActionResult> RefreshToken()
 		{
-			string userId = User.FindFirst("userId")?.Value + "";
+			string userIdSql = "EXEC CookbookAppSchema.spUserId_Get @UserId = @UserIdParameter";
 
-			string userIdSql = "SELECT UserId FROM CookbookAppSchema.Users WHERE UserId = " + userId.ToString();
+			DynamicParameters sqlUserIdParameters = new DynamicParameters();
+			sqlUserIdParameters.Add("@UserIdParameter", User.FindFirst("userId")?.Value, DbType.Int32);
 
-			int userIdFromDb = _dapper.LoadDataSingle<int>(userIdSql);
+			int userIdFromDb = await _dapper.LoadDataSingleWithParamsAsync<int>(userIdSql, sqlUserIdParameters);
 
 			return Ok(new Dictionary<string, string> {
 				{"token", _authHelper.CreateToken(userIdFromDb) }

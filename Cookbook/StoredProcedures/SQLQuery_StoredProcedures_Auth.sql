@@ -36,7 +36,34 @@ AS
 BEGIN
     SELECT [Auth].[PasswordHash],
         [Auth].[PasswordSalt] 
-    FROM TutorialAppSchema.Auth AS Auth 
+    FROM CookbookAppSchema.Auth AS Auth 
         WHERE Auth.Email = @Email
 END;
 GO
+
+CREATE OR ALTER PROCEDURE CookbookAppSchema.spEmailExists_Get
+    @Email NVARCHAR(50)
+AS
+BEGIN
+    SELECT [Auth].[Email] 
+    FROM CookbookAppSchema.Auth AS Auth 
+        WHERE Auth.Email = @Email
+END;
+GO
+
+-- EXEC CookbookAppSchema.spEmailExists_Get @Email = ''
+
+CREATE OR ALTER PROCEDURE CookbookAppSchema.spUserId_Get
+    @Email NVARCHAR(50) = NULL,
+    @UserId INT = NULL
+AS
+BEGIN
+    SELECT [Users].[UserId] 
+    FROM CookbookAppSchema.Users AS Users
+        WHERE Users.Email = ISNULL (@Email, Users.Email)
+            OR Users.UserId = ISNULL (@UserId, Users.UserId)
+END;
+GO
+
+-- EXEC CookbookAppSchema.spUserId_Get @Email = ''
+
