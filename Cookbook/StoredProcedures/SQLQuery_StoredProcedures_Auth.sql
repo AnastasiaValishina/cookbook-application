@@ -61,7 +61,7 @@ BEGIN
     SELECT [Users].[UserId] 
     FROM CookbookAppSchema.Users AS Users
         WHERE Users.Email = ISNULL (@Email, Users.Email)
-            OR Users.UserId = ISNULL (@UserId, Users.UserId)
+            AND Users.UserId = ISNULL (@UserId, Users.UserId)
 END;
 GO
 
