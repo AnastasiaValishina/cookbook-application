@@ -34,7 +34,7 @@ namespace Cookbook.Api.Helpers
 				numBytesRequested: 256 / 8);
 		}
 
-		public string CreateToken(int userId)
+		public LoginResponse CreateToken(int userId)
 		{
 			Claim[] claims = new Claim[] {
 				new Claim("userId", userId.ToString())
@@ -64,7 +64,27 @@ namespace Cookbook.Api.Helpers
 
 			SecurityToken token = tokenHandler.CreateToken(descriptor);
 
-			return tokenHandler.WriteToken(token);
+			var refreshToken = GenerateRefreshToken();
+
+			//return tokenHandler.WriteToken(token);
+
+			return new LoginResponse
+			{
+				JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
+				Expiration = token.ValidTo,
+				RefreshToken = refreshToken
+			};
+		}
+
+		private static string GenerateRefreshToken()
+		{
+			var randomNumber = new byte[64];
+
+			using var generator = RandomNumberGenerator.Create();
+
+			generator.GetBytes(randomNumber);
+
+			return Convert.ToBase64String(randomNumber);
 		}
 
 		public bool SetPassword(UserForLoginDto userForSetPassword)

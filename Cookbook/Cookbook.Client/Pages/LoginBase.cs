@@ -12,19 +12,23 @@ namespace Cookbook.Client.Pages
 		[Inject]
 		public NavigationManager NavigationManager { get; set; }
 
-		public string Email { get; set; } = string.Empty;
-		public string Password { get; set; } = string.Empty;
+		protected UserForLoginDto UserForLogin { get; set; } = new UserForLoginDto();
+
+		public DateTime? Expiration {  get; set; }
 		public string? ErrorMessage { get; set; }
 
-		protected async Task LoginUser_Click(UserForLoginDto userForLogin)
+		protected async Task LoginUser_Click()
 		{
 			try
 			{
-				await AuthService.LoginAsync(userForLogin);
+				Expiration = await AuthService.LoginAsync(UserForLogin);
+
+				ErrorMessage = null;
 				NavigationManager.NavigateTo($"/");
 			}
 			catch (Exception ex)
 			{
+				Expiration = null;
 				ErrorMessage = ex.Message;
 			}
 		}

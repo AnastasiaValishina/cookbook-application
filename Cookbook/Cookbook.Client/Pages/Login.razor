@@ -1,27 +1,38 @@
-﻿@page "/Login"
+﻿@page "/"
 @inherits LoginBase
 
 <h3>Login</h3>
 
-<div>
-	<label for="notes">Email:</label>
-	<input type="text" id="email" name="email" @bind="@Email">
-</div>
-<br>
+<fieldset disabled="@(Expiration is not null)">
+	<EditForm Model="@UserForLogin" OnValidSubmit="LoginUser_Click">
+		<div>
+			<label for="email">Email:</label>
+			<InputText @bind-Value="@UserForLogin.Email" id="email" name="email" required />
+		</div>
+		<div>
+			<label for="password">Password:</label>
+			<InputText type="password" @bind-Value="@UserForLogin.Password" id="password" name="password" required />
+		</div>
+		<div>
+			<button type="submit">Login</button>
+		</div>
+	</EditForm>
+</fieldset>
 
-<div>
-	<label for="notes">Password:</label>
-	<input type="text" id="password" name="password" @bind="@Password">
-</div>
-<br>
+@if (Expiration is not null)
+{
+	<p>You are logged in until @Expiration?.ToLongTimeString()</p>
+}
 
+@if (ErrorMessage is not null)
+{
+	<p class="error">@ErrorMessage</p>
+}
 
-<div>
+@* <div>
 	<button class="btn btn-success"
-			@onclick="() => (LoginUser_Click(new UserForLoginDto {					
-					Email = Email,
-					Password = Password
-                }))">
+			@onclick="() => (LoginUser_Click())">
 		<b>Login</b>
 	</button>
 </div>
+ *@

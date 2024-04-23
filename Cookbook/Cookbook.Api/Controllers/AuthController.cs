@@ -1,5 +1,6 @@
 ﻿using Cookbook.Api.Data;
 using Cookbook.Api.Helpers;
+using Cookbook.Api.Models;
 using Cookbook.Models.Dtos;
 using Dapper;
 using Microsoft.AspNetCore.Authorization;
@@ -110,9 +111,7 @@ namespace Cookbook.Api.Controllers
 
 			int userId = await _dapper.LoadDataSingleWithParamsAsync<int>(userIdSql, sqlUserIdParameters);
 
-			return Ok(new Dictionary<string, string> {
-				{"token", _authHelper.CreateToken(userId) }
-			});
+			return Ok(_authHelper.CreateToken(userId));
 		}
 
 		[HttpGet("RefreshToken")]
@@ -125,9 +124,7 @@ namespace Cookbook.Api.Controllers
 
 			int userIdFromDb = await _dapper.LoadDataSingleWithParamsAsync<int>(userIdSql, sqlUserIdParameters);
 
-			return Ok(new Dictionary<string, string> {
-				{"token", _authHelper.CreateToken(userIdFromDb) }
-			});
+			return Ok(_authHelper.CreateToken(userIdFromDb));
 		}
 	}
 }

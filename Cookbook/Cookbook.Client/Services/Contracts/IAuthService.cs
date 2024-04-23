@@ -4,7 +4,9 @@ namespace Cookbook.Client.Services.Contracts
 {
 	public interface IAuthService
 	{
+		ValueTask<string> GetJwtAsync();
+		Task LogoutAsync();
 		Task RegisterUser(UserForRegistrationDto userForRegistration);
-		Task LoginAsync(UserForLoginDto userForLogin);
+		Task<DateTime> LoginAsync(UserForLoginDto userForLogin);
 	}
 }
