@@ -1,0 +1,34 @@
+﻿@using Cookbook.Client.Services;
+@inject IAuthService AuthService
+
+@if (isLoggedIn)
+{
+	<span>Welcome @username <a @onclick="LogoutAsync">Logout</a></span>
+}
+else
+{
+	<NavLink href="Login"> Login </NavLink>
+}
+
+
+@code {
+	private string? username;
+	private bool isLoggedIn => username is not null;
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		AuthService.LoginChange += name =>
+		{
+			username = name;
+
+			StateHasChanged();
+		};
+	}
+
+	private async Task LogoutAsync()
+	{
+		await AuthService.LogoutAsync();
+	}
+}
