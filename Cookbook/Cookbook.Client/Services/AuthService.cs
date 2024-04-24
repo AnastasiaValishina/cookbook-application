@@ -9,16 +9,16 @@ namespace Cookbook.Client.Services
 {
 	public class AuthService : IAuthService
 	{
-		private readonly HttpClient _httpClient;
+		private readonly IHttpClientFactory _factory;
 		private ISessionStorageService _sessionStorageService;
 		private const string JWT_KEY = nameof(JWT_KEY);
 		private string? _jwtCache;
 
-		public event Action<string?>? LoginChange; // username or null
+		public event Action<string?>? LoginChange; // userId (int?) or null
 
-		public AuthService(HttpClient httpClient, ISessionStorageService sessionStorageService)
+		public AuthService(IHttpClientFactory factory, ISessionStorageService sessionStorageService)
 		{
-			_httpClient = httpClient;
+			_factory = factory;			
 			_sessionStorageService = sessionStorageService;
 		}
 
@@ -43,7 +43,8 @@ namespace Cookbook.Client.Services
 		{
 			try
 			{
-				var response = await _httpClient.PostAsJsonAsync<UserForRegistrationDto>("Auth/Register", userForRegistration);
+				var response = await _factory.CreateClient("ServerApi")
+					.PostAsJsonAsync<UserForRegistrationDto>("Auth/Register", userForRegistration);
 			}
 			catch (Exception ex)
 			{
@@ -53,9 +54,8 @@ namespace Cookbook.Client.Services
 		}
 
 		public async Task<DateTime> LoginAsync(UserForLoginDto userForLogin)
-		{
-			//var response = await _httpClient.PostAsJsonAsync<UserForLoginDto>("Auth/Login", userForLogin);
-			var response = await _httpClient.PostAsync("Auth/Login", JsonContent.Create(userForLogin));
+		{			
+			var response = await _factory.CreateClient("ServerApi").PostAsync("Auth/Login", JsonContent.Create(userForLogin));
 
 			if (!response.IsSuccessStatusCode)
 				throw new UnauthorizedAccessException("Login failed.");

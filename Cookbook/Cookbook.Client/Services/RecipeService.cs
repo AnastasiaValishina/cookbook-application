@@ -1,7 +1,7 @@
-﻿using Cookbook.Models.Dtos;
-using Cookbook.Client.Services.Contracts;
-using System.Net.Http.Json;
+﻿using Cookbook.Client.Services.Contracts;
+using Cookbook.Models.Dtos;
 using System.Net;
+using System.Net.Http.Json;
 
 namespace Cookbook.Client.Services
 {
@@ -9,9 +9,9 @@ namespace Cookbook.Client.Services
 	{
 		private readonly HttpClient _httpClient;
 
-		public RecipeService(HttpClient httpClient)
+		public RecipeService(IHttpClientFactory factory)
         {
-			_httpClient = httpClient;
+			_httpClient = factory.CreateClient("ServerApi");
 		}
 
 		public async Task<IEnumerable<RecipeDto>> GetRecipesAsync()
