@@ -1,6 +1,5 @@
 ﻿using Cookbook.Api.Data;
 using Cookbook.Api.Helpers;
-using Cookbook.Api.Models;
 using Cookbook.Models.Dtos;
 using Dapper;
 using Microsoft.AspNetCore.Authorization;
@@ -9,18 +8,20 @@ using System.Data;
 
 namespace Cookbook.Api.Controllers
 {
-	[Authorize]
+    [Authorize]
 	[ApiController]
 	[Route("[controller]")]
 	public class AuthController : ControllerBase
 	{
 		private readonly DataContextDapper _dapper;
 		private readonly AuthHelper _authHelper;
+        private readonly ILogger<AuthController> _logger;
 
-		public AuthController(IConfiguration config)
+        public AuthController(IConfiguration config, ILogger<AuthController> logger)
 		{
 			_dapper = new DataContextDapper(config);
 			_authHelper = new AuthHelper(config);
+			_logger = logger;
 		}
 
 		[AllowAnonymous]
@@ -34,7 +35,9 @@ namespace Cookbook.Api.Controllers
 		[HttpPost("Register")]
 		public async Task<IActionResult> Register(UserForRegistrationDto userForRegistration)
 		{
-			if (userForRegistration.Password == userForRegistration.PasswordConfirm)
+            _logger.LogInformation("Register called");
+
+            if (userForRegistration.Password == userForRegistration.PasswordConfirm)
 			{
 				string sqlCheckUserExists = "EXEC CookbookAppSchema.spEmailExists_Get @Email = @EmailParameter";
 
@@ -87,7 +90,9 @@ namespace Cookbook.Api.Controllers
 		[HttpPost("Login")]
 		public async Task<IActionResult> Login(UserForLoginDto userForLogin)
 		{
-			string sqlForHashAndSalt = @"EXEC CookbookAppSchema.spLoginConfirmation_Get @Email = @EmailParam";
+            _logger.LogInformation("Login called");
+
+            string sqlForHashAndSalt = @"EXEC CookbookAppSchema.spLoginConfirmation_Get @Email = @EmailParam";
 
 			DynamicParameters sqlParameters = new DynamicParameters();
 
@@ -111,7 +116,9 @@ namespace Cookbook.Api.Controllers
 
 			int userId = await _dapper.LoadDataSingleWithParamsAsync<int>(userIdSql, sqlUserIdParameters);
 
-			return Ok(_authHelper.CreateToken(userId));
+            _logger.LogInformation("Login succeeded");
+
+            return Ok(_authHelper.CreateToken(userId));
 		}
 
 		[HttpGet("RefreshToken")]

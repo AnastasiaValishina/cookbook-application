@@ -9,5 +9,6 @@ namespace Cookbook.Client.Services.Contracts
 		Task LogoutAsync();
 		Task RegisterUser(UserForRegistrationDto userForRegistration);
 		Task<DateTime> LoginAsync(UserForLoginDto userForLogin);
-	}
+		Task<bool> RefreshTokenAsync();
+    }
 }

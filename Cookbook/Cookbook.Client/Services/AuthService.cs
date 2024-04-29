@@ -72,7 +72,29 @@ namespace Cookbook.Client.Services
 			return content.Expiration;
 		}
 
-		private static string GetUsername(string token)
+        public async Task<bool> RefreshTokenAsync()
+        {
+            var response = await _factory.CreateClient("ServerApi").GetAsync("Auth/RefreshToken");
+
+			if (!response.IsSuccessStatusCode)
+			{
+				await LogoutAsync();
+				return false;
+			}
+
+            var content = await response.Content.ReadFromJsonAsync<LoginResponse>();
+
+            if (content == null)
+                throw new InvalidDataException();
+
+            await _sessionStorageService.SetItemAsync(JWT_KEY, content.JwtToken);
+
+			_jwtCache = content.JwtToken;
+
+            return true;
+        }
+
+        private static string GetUsername(string token)
 		{
 			var jwt = new JwtSecurityToken(token);
 

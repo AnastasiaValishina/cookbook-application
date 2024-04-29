@@ -57,34 +57,18 @@ namespace Cookbook.Api.Helpers
 			{
 				Subject = new ClaimsIdentity(claims),
 				SigningCredentials = credentials,
-				Expires = DateTime.Now.AddDays(1)
-			};
+				Expires = DateTime.Now.AddSeconds(30) // DateTime.Now.AddDays(1)
+            };
 
 			JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
 			SecurityToken token = tokenHandler.CreateToken(descriptor);
 
-			var refreshToken = GenerateRefreshToken();
-
-			//return tokenHandler.WriteToken(token);
-
 			return new LoginResponse
 			{
 				JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
-				Expiration = token.ValidTo,
-				RefreshToken = refreshToken
+				Expiration = token.ValidTo
 			};
-		}
-
-		private static string GenerateRefreshToken()
-		{
-			var randomNumber = new byte[64];
-
-			using var generator = RandomNumberGenerator.Create();
-
-			generator.GetBytes(randomNumber);
-
-			return Convert.ToBase64String(randomNumber);
 		}
 
 		public bool SetPassword(UserForLoginDto userForSetPassword)
