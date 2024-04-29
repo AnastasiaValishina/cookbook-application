@@ -8,7 +8,7 @@ namespace Cookbook.Client.Pages
 	{
 		[Inject]
 		public IRecipeService RecipeService { get; set; }
-		public IEnumerable<RecipeDto> Recipes { get; set; }
+		public IEnumerable<RecipeDto>? Recipes { get; set; }
 		
 		[Inject]
 		public NavigationManager NavigationManager { get; set; }

@@ -12,17 +12,19 @@ namespace Cookbook.Client.Pages
 		[Inject]
 		public NavigationManager NavigationManager { get; set; }
 
-		protected string UserName { get; set; } = string.Empty;
+		protected UserForRegistrationDto UserForRegistration { get; set; } = new UserForRegistrationDto();
+
+/*		protected string UserName { get; set; } = string.Empty;
 		protected string Email { get; set; } = string.Empty;
 		protected string Password { get; set; } = string.Empty;
-		protected string PasswordConfirm { get; set; } = string.Empty;
+		protected string PasswordConfirm { get; set; } = string.Empty;*/
 		public string? ErrorMessage { get; set; }
 
-		protected async Task RegisterUser_Click(UserForRegistrationDto userForRegistration)
+		protected async Task RegisterUser_Click()
 		{
 			try
 			{
-				await AuthService.RegisterUser(userForRegistration);
+				await AuthService.RegisterUser(UserForRegistration);
 				NavigationManager.NavigateTo($"/Login");
 			}
 			catch (Exception ex)

@@ -14,7 +14,7 @@ namespace Cookbook.Client.Pages
 
 		[Inject]
 		public NavigationManager NavigationManager { get; set; }
-		public RecipeDto Recipe { get; set; }
+		public RecipeDto? Recipe { get; set; } 
 
 		public string? ErrorMessage { get; set; }
 
@@ -45,7 +45,7 @@ namespace Cookbook.Client.Pages
 
 		protected void AddNewIngredient_Click()
 		{
-			Recipe.Ingredients.Add(new IngredientDto());
+			Recipe?.Ingredients.Add(new IngredientDto());
 		}
 
 		protected async Task DeleteRecipe_Click()
@@ -63,7 +63,7 @@ namespace Cookbook.Client.Pages
 
 		protected async Task DeleteIngredient_Click(IngredientDto ingredientToDelete)
 		{
-			Recipe.Ingredients.Remove(ingredientToDelete);
+			Recipe?.Ingredients.Remove(ingredientToDelete);
 		}
 	}
 }

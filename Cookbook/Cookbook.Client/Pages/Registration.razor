@@ -5,36 +5,31 @@
 
 <div>
 	<label for="notes">Name:</label>
-	<input type="text" id="username" name="username" @bind="@UserName">
+	<input type="text" id="username" name="username" @bind="@UserForRegistration.UserName">
 </div>
 <br>
 
 <div>
 	<label for="notes">Email:</label>
-	<input type="text" id="email" name="email" @bind="@Email">
+	<input type="text" id="email" name="email" @bind="@UserForRegistration.Email">
 </div>
 <br>
 
 <div>
 	<label for="notes">Password:</label>
-	<input type="text" id="password" name="password" @bind="@Password">
+	<input type="text" id="password" name="password" @bind="@UserForRegistration.Password">
 </div>
 <br>
 
 <div>
 	<label for="notes">Confirm your password:</label>
-	<input type="text" id="passwordconfirm" name="passwordconfirm" @bind="@PasswordConfirm">
+	<input type="text" id="passwordconfirm" name="passwordconfirm" @bind="@UserForRegistration.PasswordConfirm">
 </div>
 <br>
 
 <div>
 	<button class="btn btn-success"
-			@onclick="() => (RegisterUser_Click(new UserForRegistrationDto {
-					UserName = UserName,
-					Email = Email,
-					Password = Password,
-					PasswordConfirm	= PasswordConfirm
-                }))">
+			@onclick="() => (RegisterUser_Click())">
 		<b>Register</b>
 	</button>
 </div>

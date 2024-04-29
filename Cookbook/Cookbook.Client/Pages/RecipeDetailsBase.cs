@@ -14,7 +14,7 @@ namespace Cookbook.Client.Pages
 
 		[Inject]
 		public NavigationManager NavigationManager { get; set; }
-		public RecipeDto Recipe { get; set; }
+		public RecipeDto? Recipe { get; set; }
 		public string? ErrorMessage { get; set; }
 		protected override async Task OnInitializedAsync()
 		{

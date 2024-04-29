@@ -6,6 +6,6 @@ namespace Cookbook.Client.Pages
 	public class DisplayRecipesBase : ComponentBase
 	{
 		[Parameter]
-		public IEnumerable<RecipeDto> Recipes { get; set; }
+		public IEnumerable<RecipeDto>? Recipes { get; set; }
 	}
 }
