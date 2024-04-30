@@ -1,7 +1,11 @@
 ﻿@page "/"
 @inherits RecipesBase
 
-@if (Recipes == null)
+@if (ErrorMessage is not null)
+{
+	<p class="error">@ErrorMessage</p>
+}
+else if (Recipes == null)
 {
 	<DisplaySpinner />
 }

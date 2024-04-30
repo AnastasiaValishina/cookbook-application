@@ -8,16 +8,28 @@ namespace Cookbook.Client.Pages
 	{
 		[Inject]
 		public IRecipeService RecipeService { get; set; }
-		public IEnumerable<RecipeDto>? Recipes { get; set; }
 		
 		[Inject]
 		public NavigationManager NavigationManager { get; set; }
 
+		public IEnumerable<RecipeDto>? Recipes { get; set; }
 		protected string SearchText { get; set; } = string.Empty;
+		public string? ErrorMessage { get; set; }
 
 		protected override async Task OnInitializedAsync()
 		{
-			Recipes = await RecipeService.GetRecipesAsync();
+			try
+			{
+				ErrorMessage = "Loading...";
+
+				Recipes = await RecipeService.GetRecipesAsync();
+
+				ErrorMessage = null;
+			}
+			catch 
+			{
+				ErrorMessage = "Failed to retrieve data.";
+			}
 		}
 
 		protected IOrderedEnumerable<IGrouping<int, RecipeDto>> GetGroupedByCategory()
