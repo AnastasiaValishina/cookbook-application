@@ -10,7 +10,7 @@ namespace Cookbook.Client.Services
 	public class AuthService : IAuthService
 	{
 		private readonly IHttpClientFactory _factory;
-		private ISessionStorageService _sessionStorageService;
+		private readonly ISessionStorageService _sessionStorageService;
 		private const string JWT_KEY = nameof(JWT_KEY);
 		private string? _jwtCache;
 

@@ -57,7 +57,7 @@ namespace Cookbook.Api.Helpers
 			{
 				Subject = new ClaimsIdentity(claims),
 				SigningCredentials = credentials,
-				Expires = DateTime.Now.AddSeconds(30) // DateTime.Now.AddDays(1)
+				Expires = DateTime.Now.AddDays(1)
             };
 
 			JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();

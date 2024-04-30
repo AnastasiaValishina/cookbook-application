@@ -46,7 +46,7 @@ namespace Cookbook.Api.Controllers
 
 				IEnumerable<string> existingUsers = await _dapper.LoadDataWithParamsAsync<string>(sqlCheckUserExists, sqlUserExistsParameters);
 
-				if (existingUsers.Count() == 0)
+				if (!existingUsers.Any())
 				{
 					UserForLoginDto userForSetPassword = new UserForLoginDto()
 					{
