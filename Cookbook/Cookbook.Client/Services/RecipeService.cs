@@ -22,7 +22,7 @@ namespace Cookbook.Client.Services
 
 				if (response.IsSuccessStatusCode)
 				{
-					if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+					if (response.StatusCode == HttpStatusCode.NoContent)
 					{
 						return Enumerable.Empty<RecipeDto>();
 					}
@@ -50,7 +50,7 @@ namespace Cookbook.Client.Services
 
 				if (response.IsSuccessStatusCode)
 				{
-					if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+					if (response.StatusCode == HttpStatusCode.NoContent)
 					{
 						return default(RecipeDto);
 					}
@@ -79,7 +79,7 @@ namespace Cookbook.Client.Services
 
 				if (response.IsSuccessStatusCode)
 				{
-					if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+					if (response.StatusCode == HttpStatusCode.NoContent)
 					{
 						return default(RecipeDto);
 					}

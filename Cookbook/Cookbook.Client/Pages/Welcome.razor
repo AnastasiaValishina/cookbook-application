@@ -1,0 +1,30 @@
+﻿@page "/"
+@inject NavigationManager NavigationManager
+
+
+<h3>Welcome to Cook it</h3>
+<p>Your personal recipe organiser.</p>
+<p>Store your recipes in Cook It cloud and access them on your devices anytime.</p>
+
+<button class="btn btn-success"
+		@onclick="() => (Login_Click())">
+	<b>LOG IN</b>
+</button>
+
+<button class="btn btn-success"
+		@onclick="() => (Registration_Click())">
+	<b>SIGN UP</b>
+</button>
+
+@code {
+
+	private async Task Login_Click()
+	{
+		NavigationManager.NavigateTo("/Login");
+	}
+
+	private async Task Registration_Click()
+	{
+		NavigationManager.NavigateTo("/Register");
+	}
+}

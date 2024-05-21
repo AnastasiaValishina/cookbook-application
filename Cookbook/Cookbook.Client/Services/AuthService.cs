@@ -3,7 +3,6 @@ using Cookbook.Client.Services.Contracts;
 using Cookbook.Models.Dtos;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
-using System.Security.Claims;
 
 namespace Cookbook.Client.Services
 {
@@ -44,7 +43,7 @@ namespace Cookbook.Client.Services
 			try
 			{
 				var response = await _factory.CreateClient("ServerApi")
-					.PostAsJsonAsync<UserForRegistrationDto>("Auth/Register", userForRegistration);
+					.PostAsJsonAsync("Auth/Register", userForRegistration);
 			}
 			catch (Exception ex)
 			{
@@ -67,7 +66,7 @@ namespace Cookbook.Client.Services
 
 			await _sessionStorageService.SetItemAsync(JWT_KEY, content.JwtToken);
 
-			LoginChange?.Invoke(GetUsername(content.JwtToken));
+			LoginChange?.Invoke(GetUserId(content.JwtToken));
 
 			return content.Expiration;
 		}
@@ -94,11 +93,16 @@ namespace Cookbook.Client.Services
             return true;
         }
 
-        private static string GetUsername(string token)
+        private static string? GetUserId(string token)
 		{
 			var jwt = new JwtSecurityToken(token);
 
-			return jwt.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+			var userIdClaim = jwt.Claims.FirstOrDefault(claim => claim.Type == "userId");
+
+			if (userIdClaim != null)
+				return userIdClaim.Value;
+
+			return null;
 		}
 	}
 }
