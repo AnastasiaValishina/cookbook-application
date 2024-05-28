@@ -1,20 +1,33 @@
 ﻿@page "/"
 @inject NavigationManager NavigationManager
 
+<div class="vegetableimg">
+	<img  src="Images/vegetables.png"/>
+</div>
 
-<h3>Welcome to Cook it</h3>
-<p>Your personal recipe organiser.</p>
-<p>Store your recipes in Cook It cloud and access them on your devices anytime.</p>
+<div class="mainblock">
+	<h1>Welcome to Cook it</h1>
+	<p>
+	Your personal recipe organiser.<br />
+	Store your recipes in Cook It cloud and access them on your devices anytime.</p>	
 
-<button class="btn btn-success"
-		@onclick="() => (Login_Click())">
-	<b>LOG IN</b>
-</button>
+	<button class="btn btn-success" id="login-btn"
+			@onclick="() => (Login_Click())">
+		<b>LOG IN</b>
+	</button>
 
-<button class="btn btn-success"
-		@onclick="() => (Registration_Click())">
-	<b>SIGN UP</b>
-</button>
+	<button class="btn btn-success" id="register-btn"
+			@onclick="() => (Registration_Click())">
+		<b>SIGN UP</b>
+	</button>
+</div>
+<div class="phoneimg">
+	<img  src="Images/phone.png" alt="Cook it mobile application" />
+</div>
+
+
+
+
 
 @code {
 

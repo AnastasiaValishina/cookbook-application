@@ -1,5 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
+
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #fffff8;
+    color: #2b2c2e;
+    background-image: url('Images/vegetables.png');
+    font-family: "Lato", sans-serif;
+}
+
+.lato-regular {
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.lato-bold {
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.lato-black {
+    font-family: "Lato", sans-serif;
+    font-weight: 900;
+    font-style: normal;
 }
 
 h1:focus {
@@ -101,3 +124,9 @@ a, .btn-link {
 code {
     color: #c02d76;
 }
+
+input {
+    color: #2b2c2e;
+}
+
+

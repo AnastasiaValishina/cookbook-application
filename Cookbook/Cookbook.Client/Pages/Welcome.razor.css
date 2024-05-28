@@ -1,0 +1,45 @@
+﻿h1 {
+    color: #4dc852;
+    font-size: 4em;
+    font-weight: bold;
+}
+
+.vegetableimg {
+    position: fixed;
+    top: 100px;
+    left: -50px;
+}
+
+.mainblock {
+    float: left;
+    height: 300px;
+    width: 60%;
+    margin-top: 140px;
+    margin-left: 10%;
+}
+
+.phoneimg {
+    width: 30%;
+    height: 100%;
+    float: right;
+}
+
+.btn {
+    border-radius: 30px;
+    height: 60px;
+}
+
+#login-button {
+    background-color: #E4EDEE;
+    color: #2B2C2E;
+    width: 140px;
+}
+
+#register-btn {
+    background-color: #4DC852;
+    width: 256px;
+}
+
+
+
+
