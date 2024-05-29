@@ -1,42 +1,43 @@
 ﻿h1 {
     color: #4dc852;
-    font-size: 4em;
     font-weight: bold;
 }
 
 .vegetableimg {
     position: fixed;
     top: 100px;
-    left: -50px;
+    left: 450px;
 }
 
-.mainblock {
-    float: left;
-    height: 300px;
-    width: 60%;
-    margin-top: 140px;
-    margin-left: 10%;
+.float-end {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 85vh; 
 }
 
-.phoneimg {
-    width: 30%;
-    height: 100%;
-    float: right;
+#mainblock {
+    justify-content: center;
 }
 
-.btn {
-    border-radius: 30px;
-    height: 60px;
+#phoneimg {
+    margin-right: 0;
 }
 
-#login-button {
+.btn-lg {
+    border-radius: 24px;
+}
+
+#login-btn {
     background-color: #E4EDEE;
+    border-color: #E4EDEE;
     color: #2B2C2E;
     width: 140px;
 }
 
 #register-btn {
     background-color: #4DC852;
+    border-color: #4DC852;
     width: 256px;
 }
 
