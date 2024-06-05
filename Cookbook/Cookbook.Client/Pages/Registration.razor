@@ -2,63 +2,68 @@
 @inherits RegistrationBase
 
 <div class="text-center">
-	<div class="my-4">
+	<div class="my-2">
 		<img src="Images/logo.png" />
 		<h3 id="logo_name">Cook It</h3>
 	</div>
 </div>
 <div class="row justify-content-center">
 	<form>
-		<div class="form-group col-6 mx-auto">
-			<div class="form-floating my-4">
-				<input type="text"
-					class="form-control"
-					id="username"
-					name="username"
-					placeholder="Enter name"
-					   @bind="@UserForRegistration.UserName" required>
-				<label for="username" class="form-label">Name:</label>
-			</div>
+		<div class="form-group col-4 mx-auto">
+			<EditForm Model="UserForRegistration" OnValidSubmit="RegisterUser_Click">
+				<DataAnnotationsValidator />
+				<div class="form-floating my-4">
+					<input type="text"
+						   class="form-control"
+						   id="validationDefault01"
+						   name="username"
+						   placeholder="Enter name"
+						   @bind="@UserForRegistration.UserName">
+					<label for="validationDefault01" class="form-label">Name:</label>
+					<ValidationMessage For="@(() => UserForRegistration.UserName)" />
+				</div>
 
-			<div class="form-floating my-4">
-				<input type="email"
-					class="form-control"
-					id="email"
-					name="email"
-					placeholder="Enter email"
-					   @bind="@UserForRegistration.Email" required>
-				<label for="email" class="form-label">Email:</label>
-			</div>
+				<div class="form-floating my-4">
+					<input type="email"
+						   class="form-control"
+						   id="email"
+						   name="email"
+						   placeholder="Enter email"
+						   @bind="@UserForRegistration.Email">
+					<label for="email" class="form-label">Email:</label>
+				</div>
 
-			<div class="form-floating my-4">
-				<input type="text"
-					class="form-control"
-					id="password"
-					name="password"
-					placeholder="Enter your password"
-					   @bind="@UserForRegistration.Password" required>
-				<label for="password" class="form-label">Password:</label>
-			</div>
+				<div class="form-floating my-4">
+					<input type="text"
+						   class="form-control"
+						   id="password"
+						   name="password"
+						   placeholder="Enter your password"
+						   @bind="@UserForRegistration.Password">
+					<label for="password" class="form-label">Password:</label>
+				</div>
 
-			<div class="form-floating my-4">
-				<input type="text"
-					id="passwordconfirm"
-					class="form-control"
-					name="passwordconfirm"
-					   placeholder="Confirm your password required"
-					@bind="@UserForRegistration.PasswordConfirm">
-				<label for="notes">Confirm your password:</label>
-			</div>
-		</div>
-	</form>
-
+				<div class="form-floating my-4">
+					<input type="text"
+						   id="passwordconfirm"
+						   class="form-control"
+						   name="passwordconfirm"
+						   placeholder="Confirm your password"
+						   @bind="@UserForRegistration.PasswordConfirm">
+					<label for="notes">Confirm your password:</label>
+				</div>
 	<div class="text-center">
-		<button class="btn btn-primary btn-lg" id="register-btn"
-				@onclick="() => (RegisterUser_Click())">
+		<button class="btn btn-primary btn-lg"
+				id="register-btn"
+				type="submit" >
 			<b>Register</b>
 		</button>
 		<p>Already have an account? <link>Log in </p>
 	</div>
+			</EditForm>
+		</div>
+	</form>
+
 </div>
 
 

@@ -14,10 +14,6 @@ namespace Cookbook.Client.Pages
 
 		protected UserForRegistrationDto UserForRegistration { get; set; } = new UserForRegistrationDto();
 
-/*		protected string UserName { get; set; } = string.Empty;
-		protected string Email { get; set; } = string.Empty;
-		protected string Password { get; set; } = string.Empty;
-		protected string PasswordConfirm { get; set; } = string.Empty;*/
 		public string? ErrorMessage { get; set; }
 
 		protected async Task RegisterUser_Click()
