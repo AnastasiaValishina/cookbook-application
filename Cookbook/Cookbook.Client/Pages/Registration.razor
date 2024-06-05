@@ -7,9 +7,9 @@
 		<h3 id="logo_name">Cook It</h3>
 	</div>
 </div>
-<div class="row justify-content-center">
+<div class="row d-flex justify-content-center">
 	<form>
-		<div class="form-group col-4 mx-auto">
+		<div class="form-group custom-col mx-auto">
 			<EditForm Model="UserForRegistration" OnValidSubmit="RegisterUser_Click">
 				<DataAnnotationsValidator />
 				<div class="form-floating my-4">
@@ -52,14 +52,17 @@
 						   @bind="@UserForRegistration.PasswordConfirm">
 					<label for="notes">Confirm your password:</label>
 				</div>
-	<div class="text-center">
-		<button class="btn btn-primary btn-lg"
-				id="register-btn"
-				type="submit" >
-			<b>Register</b>
-		</button>
-		<p>Already have an account? <link>Log in </p>
-	</div>
+				<div class="text-center">
+					<button class="btn btn-primary btn-lg w-100"
+							id="register-btn"
+							type="submit">
+						<b>Register</b>
+					</button>
+					<p>
+						Already have an account?
+						<a href="Login">Log in</a>
+					</p>
+				</div>
 			</EditForm>
 		</div>
 	</form>
