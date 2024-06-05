@@ -1,8 +1,13 @@
-﻿namespace Cookbook.Models.Dtos
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Cookbook.Models.Dtos
 {
 	public class UserForLoginDto
 	{
-		public string Email { get; set; } = string.Empty;
-		public string Password { get; set; } = string.Empty;
+		[Required]
+		public string? Email { get; set; }
+
+		[Required]
+		public string? Password { get; set; }
 	}
 }

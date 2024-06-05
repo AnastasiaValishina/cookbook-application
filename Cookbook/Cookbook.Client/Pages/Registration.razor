@@ -15,11 +15,11 @@
 				<div class="form-floating my-4">
 					<input type="text"
 						   class="form-control"
-						   id="validationDefault01"
+						   id="username"
 						   name="username"
 						   placeholder="Enter name"
 						   @bind="@UserForRegistration.UserName">
-					<label for="validationDefault01" class="form-label">Name:</label>
+					<label for="username" class="form-label">Name:</label>
 					<ValidationMessage For="@(() => UserForRegistration.UserName)" />
 				</div>
 
@@ -41,6 +41,7 @@
 						   placeholder="Enter your password"
 						   @bind="@UserForRegistration.Password">
 					<label for="password" class="form-label">Password:</label>
+					<ValidationMessage For="@(() => UserForRegistration.Password)" />
 				</div>
 
 				<div class="form-floating my-4">
@@ -51,10 +52,11 @@
 						   placeholder="Confirm your password"
 						   @bind="@UserForRegistration.PasswordConfirm">
 					<label for="notes">Confirm your password:</label>
+					<ValidationMessage For="@(() => UserForRegistration.PasswordConfirm)" />
 				</div>
 				<div class="text-center">
 					<button class="btn btn-primary btn-lg w-100"
-							id="register-btn"
+							id="orange-btn"
 							type="submit">
 						<b>Register</b>
 					</button>

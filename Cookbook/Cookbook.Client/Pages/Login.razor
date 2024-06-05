@@ -1,22 +1,52 @@
 ﻿@page "/Login"
 @inherits LoginBase
 
-<h3>Login</h3>
+<div class="text-center">
+	<div class="my-2">
+		<img src="Images/logo.png" />
+		<h3 id="logo_name">Cook It</h3>
+	</div>
+</div>
 
 <fieldset disabled="@(Expiration is not null)">
-	<EditForm Model="@UserForLogin" OnValidSubmit="LoginUser_Click">
-		<div>
-			<label for="email">Email:</label>
-			<InputText @bind-Value="@UserForLogin.Email" id="email" name="email" required />
-		</div>
-		<div>
-			<label for="password">Password:</label>
-			<InputText type="password" @bind-Value="@UserForLogin.Password" id="password" name="password" required />
-		</div>
-		<div>
-			<button type="submit">Login</button>
-		</div>
-	</EditForm>
+	<div class="row d-flex justify-content-center">
+		<form>
+			<div class="form-group custom-col mx-auto">
+				<EditForm Model="@UserForLogin" OnValidSubmit="LoginUser_Click">
+					<div class="form-floating my-4">
+						<input type="text"
+							   class="form-control"
+							   id="email"
+							   placeholder="Enter email"
+							   name="email"
+							   @bind="@UserForLogin.Email" />
+						<label for="email" class="form-label">Email:</label>
+					</div>
+					<div class="form-floating my-4">
+						<input type="password"
+							   class="form-control"
+							   id="password"
+							   placeholder="Enter password"
+							   name="password"
+							   @bind="@UserForLogin.Password" />
+						<label for="password" class="form-label">Password:</label>
+					</div>
+					<div class="text-center">
+						<button class="btn btn-primary btn-lg w-100"
+								id="orange-btn"
+								type="submit">
+							<b>Login</b>
+						</button>
+						<p>
+							Don't have an account?
+							<a href="Register">Register</a>
+						</p>
+					</div>
+				</EditForm>
+			</div>
+		</form>
+
+	</div>
 </fieldset>
 
 @if (Expiration is not null)
@@ -28,11 +58,3 @@
 {
 	<p class="error">@ErrorMessage</p>
 }
-
-@* <div>
-	<button class="btn btn-success"
-			@onclick="() => (LoginUser_Click())">
-		<b>Login</b>
-	</button>
-</div>
- *@
