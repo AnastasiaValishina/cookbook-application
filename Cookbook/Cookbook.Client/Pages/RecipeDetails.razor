@@ -11,35 +11,51 @@ else if (ErrorMessage != null)
 }
 else
 {
-	<h1 class="mb-5">@Recipe.Title</h1>
-	<button class="btn-primary btn-lg" @onclick="DeleteRecipe_Click">Delete</button>
-	<br>
-	<button class="btn-primary" @onclick="EditRecipe_Click">Edit</button>
-	<br>
+	<h1 class="capitalized-title my-3">@Recipe.Title</h1>
+
 	<div class="row">
 		<div class="col-md-4">
 			<h3>Ingridients: </h3>
-			@foreach (IngredientDto ingredient in Recipe.Ingredients)
-			{
-				<p>@GetIngredientDetails(ingredient)</p>
-			}
+			<table class="table">
+				<tbody>
+					@foreach (IngredientDto ingredient in Recipe.Ingredients)
+					{
+						<tr>
+							<td class="capitalized-title">@ingredient.Name</td>
+							<td>@GetIngredientQty(ingredient)</td>
+							<td>@ingredient.Unit</td>
+						</tr>
+					}
+				</tbody>
+			</table>
 		</div>
 		<div class="col-md-6">
 			<p class="mb-4">
-				<h4>Notes:</h4>
-					@Recipe.Notes
-				</p>
+				<h3>Notes:</h3>
+				@Recipe.Notes
+			</p>
 			<p class="mb-4">
 				<b>Category: </b>
-					@Recipe.CategoryName</p>
+				@Recipe.CategoryName
+			</p>
 			<p class="mb-4">
 				<b>Created: </b>
 				@Recipe.RecipeCreated.ToString("MM/dd/yyyy")
 			</p>
 			<p class="mb-4">
 				<b>Source: </b>
-					@Recipe.Source				
+				@Recipe.Source
 			</p>
 		</div>
+	</div>
+	<div class="float-end m-5">
+		<button class="btn btn-primary btn-lg btn-lg-gray mx-2"
+				@onclick="DeleteRecipe_Click">
+			Delete
+		</button>
+		<button class="btn btn-primary btn-lg btn-lg-gray mx-2"
+				@onclick="EditRecipe_Click">
+			Edit
+		</button>
 	</div>
 }

@@ -28,9 +28,12 @@ namespace Cookbook.Client.Pages
 			}
 		}
 
-		protected string GetIngredientDetails(IngredientDto ingredient)
+		protected string GetIngredientQty(IngredientDto ingredient)
 		{
-			return $"{ingredient.Qty} {ingredient.Unit} {ingredient.Name}";
+			if (ingredient.Qty == 0) 
+				return "";
+
+			return ingredient.Qty.ToString();
 		}
 
 		protected async Task DeleteRecipe_Click()
