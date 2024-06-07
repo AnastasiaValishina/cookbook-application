@@ -133,6 +133,7 @@ input {
 #logo_name {
     font-family: 'Lemonada';
     text-transform: uppercase;
+    color: #2B2C2E;
 }
 .custom-col {
     max-width: 100%;
