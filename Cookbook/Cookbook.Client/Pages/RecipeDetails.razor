@@ -11,51 +11,56 @@ else if (ErrorMessage != null)
 }
 else
 {
-	<h1 class="capitalized-title my-3">@Recipe.Title</h1>
+	<div class="m-4">
 
-	<div class="row">
-		<div class="col-md-4">
-			<h3>Ingridients: </h3>
-			<table class="table">
-				<tbody>
-					@foreach (IngredientDto ingredient in Recipe.Ingredients)
-					{
-						<tr>
-							<td class="capitalized-title">@ingredient.Name</td>
-							<td>@GetIngredientQty(ingredient)</td>
-							<td>@ingredient.Unit</td>
-						</tr>
-					}
-				</tbody>
-			</table>
+		<h1 class="capitalized-title mb-4">@Recipe.Title</h1>
+
+		<div class="row">
+			<div class="col-md-4 ge-4">
+				<h3>Ingridients: </h3>
+				<table class="table">
+					<tbody>
+						@foreach (IngredientDto ingredient in Recipe.Ingredients)
+						{
+							<tr>
+								<td class="capitalized-title">@ingredient.Name</td>
+								<td>@GetIngredientQty(ingredient)</td>
+								<td>@ingredient.Unit</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+			<div class="col-md-6">
+				<p class="mb-4">
+					<h3>Notes:</h3>
+					@Recipe.Notes
+				</p>
+				<p class="mb-4">
+					<b>Category: </b>
+					@Recipe.CategoryName
+				</p>
+				<p class="mb-4">
+					<b>Created: </b>
+					@Recipe.RecipeCreated.ToString("MM/dd/yyyy")
+				</p>
+				<p class="mb-4">
+					<b>Source: </b>
+					@Recipe.Source
+				</p>
+			</div>
 		</div>
-		<div class="col-md-6">
-			<p class="mb-4">
-				<h3>Notes:</h3>
-				@Recipe.Notes
-			</p>
-			<p class="mb-4">
-				<b>Category: </b>
-				@Recipe.CategoryName
-			</p>
-			<p class="mb-4">
-				<b>Created: </b>
-				@Recipe.RecipeCreated.ToString("MM/dd/yyyy")
-			</p>
-			<p class="mb-4">
-				<b>Source: </b>
-				@Recipe.Source
-			</p>
+		<div class="row">
+			<div class="btn-toolbar col-md-4 mt-3 d-flex justify-content-between">
+				<button class="btn btn-primary btn-lg btn-lg-gray m-1"
+						@onclick="DeleteRecipe_Click">
+					Delete
+				</button>
+				<button class="btn btn-primary btn-lg btn-lg-gray m-1"
+						@onclick="EditRecipe_Click">
+					Edit
+				</button>
+			</div>
 		</div>
-	</div>
-	<div class="float-end m-5">
-		<button class="btn btn-primary btn-lg btn-lg-gray mx-2"
-				@onclick="DeleteRecipe_Click">
-			Delete
-		</button>
-		<button class="btn btn-primary btn-lg btn-lg-gray mx-2"
-				@onclick="EditRecipe_Click">
-			Edit
-		</button>
 	</div>
 }

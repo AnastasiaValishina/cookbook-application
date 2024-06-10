@@ -7,8 +7,12 @@
 }
 
 .navbar-brand {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-family: Lemonada
+}
+
+#logo_image {
+    height: 5rem
 }
 
 .bi {
@@ -74,10 +78,10 @@
         display: block;
     }
     
-    .nav-scrollable {
+    /*.nav-scrollable {*/
         /* Allow sidebar to scroll for tall menus */
-        height: calc(100vh - 3.5rem);
+        /*height: calc(100vh - 3.5rem);
         overflow-y: auto;
-    }
+    }*/
 }
 
