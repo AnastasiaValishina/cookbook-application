@@ -1,0 +1,9 @@
+﻿.input-group-append {
+    background-color: #4DC852;
+    color: #FFFFF8;
+}
+
+#search-block {
+    width: 40%;
+    min-width: fit-content;
+}

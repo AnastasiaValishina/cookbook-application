@@ -11,26 +11,28 @@ else if (Recipes == null)
 }
 else
 {
-	<h2 class="mb-5">My recipes</h2>
+	<h1 class="mb-4">My recipes</h1>
 
-	<div>
-		<input type="text" @bind="@SearchText" placeholder="Search..">
+	<div class="input-group mb-3" id="search-block">
+		<input type="text"
+			   class="form-control"
+			   placeholder="Search.."
+			   aria-describedby="basic-addon2"
+			   @bind="@SearchText">
 
-		<button class="btn btn-success"
+		<button class="btn input-group-append"
+				id="basic-addon2"
 				@onclick="() => (Search_Click())">
 			<b>Search</b>
 		</button>
 	</div>
-	<br>
 
-	<div>
+	@* 	<div>
 		<button class="btn btn-success"
 				@onclick="() => (AddNewRecipe_Click())">
 			<b>Add new recipe</b>
 		</button>
-	</div>
-	<br>
-
+	</div> *@
 
 	var itemCount = Recipes.Count();
 
