@@ -1,10 +1,13 @@
 ﻿using Cookbook.Api.Data;
-using Cookbook.Api.Models;
 using Cookbook.Models.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cookbook.Api.Controllers
 {
+	[Authorize]
+	[ApiController]
+	[Route("[controller]")]
 	public class CategoryController : ControllerBase
 	{
 		private readonly DataContextDapper _dapper;

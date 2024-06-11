@@ -1,57 +1,73 @@
 ﻿@page "/AddRecipe"
 @inherits AddRecipeBase
 
-<h3>AddRecipe</h3>
-
+<h4>Fill in the following blanks to add new recipe to your database:</h4>
+<h4>@ErrorMessage</h4>
 <div>
-	<label for="title">Title:</label>
-	<input type="text" id="title" name="title" @bind="@RecipeToAdd.Title" required>
-</div>
-<br>
-@foreach (var ing in RecipeToAdd.Ingredients)
-{
-	<div>@ing.Qty&nbsp @ing.Unit&nbsp <b>@ing.Name</b></div>
-}
-<br>
+	<form>
+		<div class="form-group">
+			<EditForm Model="RecipeToAdd" OnValidSubmit="AddRecipe_Click">
 
-<div>
-	<p>Ingredients:</p>
-	@foreach (var ingredient in RecipeToAdd.Ingredients)
-	{
-		<div>
-			<input type="text" @bind="@ingredient.Name" placeholder="Ingredient Name" />
-			<input type="number" @bind="@ingredient.Qty" placeholder="Quantity" />
-			<input type="text" @bind="@ingredient.Unit" placeholder="Unit" />
+				<div class="my-4">
+					<label for="title" class="form-label">Title:</label>
+					<input type="text"
+						   class="form-control"
+						   id="title"
+						   name="title"
+						   @bind="@RecipeToAdd.Title">
+					<ValidationMessage For="@(() => RecipeToAdd.Title)" />
+				</div>
+
+				<div>
+					<p>Ingredients:</p>
+					@foreach (var ingredient in RecipeToAdd.Ingredients)
+					{
+						<div>
+							<input type="text" @bind="@ingredient.Name" placeholder="Ingredient Name" />
+							<input type="number" @bind="@ingredient.Qty" placeholder="Quantity" />
+							<input type="text" @bind="@ingredient.Unit" placeholder="Unit" />
+						</div>
+					}
+
+					<button @onclick="AddNewIngredient">Add Ingredient</button>
+				</div>
+
+				<div class="my-4">
+					<label for="notes" class="form-label">Notes:</label>
+					<textarea type="text"
+							  class="form-control"
+							  id="notes"
+							  name="notes"
+							  @bind="@RecipeToAdd.Notes"></textarea>
+				</div>
+
+				<select class="form-select" aria-label="Select a category" @bind="RecipeToAdd.CategoryId">
+					@if (categories != null)
+					{
+						@foreach (var category in categories)
+						{
+							<option value="@category.Id">@category.CategoryName</option>
+						}
+					}
+				</select>
+				<ValidationMessage For="@(() => RecipeToAdd.CategoryId)" />
+
+				<div>
+					<label for="source" class="form-label">Source:</label>
+					<input type="text"
+						   id="source"
+						   name="source"
+						   @bind="@RecipeToAdd.Source">
+				</div>
+
+				<div>
+					<button class="btn btn-primary btn-lg"
+							id="orange-btn"
+							type="submit">
+						<b>Add</b>
+					</button>
+				</div>
+			</EditForm>
 		</div>
-	}
-	<br>
-	<button @onclick="AddNewIngredient">Add Ingredient</button>
+	</form>
 </div>
-<br>
-
-<div>
-	<label for="notes">Notes:</label>
-	<input type="text" id="notes" name="notes" @bind="@RecipeToAdd.Notes">
-</div>
-<br>
-
-<div>
-	<label for="category">Category:</label>
-	<input type="text" id="category" name="category" @bind="@RecipeToAdd.CategoryId">
-</div>
-<br>
-
-<div>
-	<label for="source">Source:</label>
-	<input type="text" id="source" name="source" @bind="@RecipeToAdd.Source">
-</div>
-<br>
-
-
-<div>
-	<button class="btn btn-success"
-			@onclick="() => (AddRecipe_Click())">
-		<b>Add</b>
-	</button>
-</div>
- 

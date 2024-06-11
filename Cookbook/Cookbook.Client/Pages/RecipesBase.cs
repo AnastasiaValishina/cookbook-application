@@ -45,11 +45,6 @@ namespace Cookbook.Client.Pages
 			return groupedRecipeDtos.FirstOrDefault(pg => pg.CategoryId == groupedRecipeDtos.Key).CategoryName;
 		}
 
-		protected async Task AddNewRecipe_Click()
-		{
-			NavigationManager.NavigateTo("/AddRecipe");
-		}
-
 		protected async Task Search_Click()
 		{
 			if (SearchText == string.Empty) return;

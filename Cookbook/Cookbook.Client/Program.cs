@@ -18,6 +18,7 @@ builder.Services.AddHttpClient("ServerApi")
 
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddScoped<IRecipeService, RecipeService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddBlazoredSessionStorageAsSingleton();
 
