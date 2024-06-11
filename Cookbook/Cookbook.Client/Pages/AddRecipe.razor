@@ -3,7 +3,7 @@
 
 <h4>Fill in the following blanks to add new recipe to your database:</h4>
 <h4>@ErrorMessage</h4>
-<div>
+<div class="container-md">
 	<form>
 		<div class="form-group">
 			<EditForm Model="RecipeToAdd" OnValidSubmit="AddRecipe_Click">
@@ -12,7 +12,6 @@
 					<label for="title" class="form-label">Title:</label>
 					<input type="text"
 						   class="form-control"
-						   id="title"
 						   name="title"
 						   @bind="@RecipeToAdd.Title">
 					<ValidationMessage For="@(() => RecipeToAdd.Title)" />
@@ -22,21 +21,30 @@
 					<p>Ingredients:</p>
 					@foreach (var ingredient in RecipeToAdd.Ingredients)
 					{
-						<div>
-							<input type="text" @bind="@ingredient.Name" placeholder="Ingredient Name" />
-							<input type="number" @bind="@ingredient.Qty" placeholder="Quantity" />
-							<input type="text" @bind="@ingredient.Unit" placeholder="Unit" />
+						<div class="input-group">
+							<input type="text" 
+								class="form-control" 
+								@bind="@ingredient.Name" 
+								placeholder="Ingredient Name" />
+							<input type="number" 
+								class="form-control" 
+								@bind="@ingredient.Qty" 
+								placeholder="Quantity" />
+							<input type="text" 
+								class="form-control" 
+								@bind="@ingredient.Unit" 
+								placeholder="Unit" />
 						</div>
 					}
-
-					<button @onclick="AddNewIngredient">Add Ingredient</button>
+					<button class="btn btn-lg green-lg-rounded-btn mt-3" 
+							@onclick="AddNewIngredient">Add Ingredient
+					</button>
 				</div>
 
 				<div class="my-4">
 					<label for="notes" class="form-label">Notes:</label>
 					<textarea type="text"
-							  class="form-control"
-							  id="notes"
+							  class="form-control"							 
 							  name="notes"
 							  @bind="@RecipeToAdd.Notes"></textarea>
 				</div>
@@ -52,17 +60,15 @@
 				</select>
 				<ValidationMessage For="@(() => RecipeToAdd.CategoryId)" />
 
-				<div>
+				<div class="my-4">
 					<label for="source" class="form-label">Source:</label>
 					<input type="text"
-						   id="source"
 						   name="source"
 						   @bind="@RecipeToAdd.Source">
 				</div>
 
 				<div>
-					<button class="btn btn-primary btn-lg"
-							id="orange-btn"
+					<button class="btn btn-lg green-lg-rounded-btn"
 							type="submit">
 						<b>Add</b>
 					</button>

@@ -21,6 +21,7 @@
 							   name="email"
 							   @bind="@UserForLogin.Email" />
 						<label for="email" class="form-label">Email:</label>
+						<ValidationMessage For="@(() => UserForLogin.Email)" />
 					</div>
 					<div class="form-floating my-4">
 						<input type="password"
@@ -30,10 +31,10 @@
 							   name="password"
 							   @bind="@UserForLogin.Password" />
 						<label for="password" class="form-label">Password:</label>
+						<ValidationMessage For="@(() => UserForLogin.Password)" />
 					</div>
 					<div class="text-center">
-						<button class="btn btn-primary btn-lg w-100"
-								id="orange-btn"
+						<button class="btn btn-lg w-100 orange-btn"
 								type="submit">
 							<b>Login</b>
 						</button>
@@ -45,7 +46,6 @@
 				</EditForm>
 			</div>
 		</form>
-
 	</div>
 </fieldset>
 
