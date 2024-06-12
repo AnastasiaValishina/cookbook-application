@@ -1,77 +1,106 @@
 ﻿@page "/AddRecipe"
 @inherits AddRecipeBase
 
-<h4>Fill in the following blanks to add new recipe to your database:</h4>
-<h4>@ErrorMessage</h4>
-<div class="container-md">
+<div class="container gx-4 gy-5"
+	<h4 class="mb-3">Fill in the following blanks to add new recipe to your database:</h4>
+	<h4>@ErrorMessage</h4>
 	<form>
 		<div class="form-group">
 			<EditForm Model="RecipeToAdd" OnValidSubmit="AddRecipe_Click">
-
-				<div class="my-4">
-					<label for="title" class="form-label">Title:</label>
+				<div class="row my-3">
+					<div class="col-2">
+						<label for="title" class="form-label d-flex float-end">Title:</label>
+					</div>
+					<div class="col align-self-center">
 					<input type="text"
 						   class="form-control"
 						   name="title"
 						   @bind="@RecipeToAdd.Title">
 					<ValidationMessage For="@(() => RecipeToAdd.Title)" />
+					</div>
 				</div>
-
-				<div>
-					<p>Ingredients:</p>
-					@foreach (var ingredient in RecipeToAdd.Ingredients)
-					{
-						<div class="input-group">
-							<input type="text" 
-								class="form-control" 
-								@bind="@ingredient.Name" 
-								placeholder="Ingredient Name" />
-							<input type="number" 
-								class="form-control" 
-								@bind="@ingredient.Qty" 
-								placeholder="Quantity" />
-							<input type="text" 
-								class="form-control" 
-								@bind="@ingredient.Unit" 
-								placeholder="Unit" />
-						</div>
-					}
-					<button class="btn btn-lg green-lg-rounded-btn mt-3" 
-							@onclick="AddNewIngredient">Add Ingredient
-					</button>
-				</div>
-
-				<div class="my-4">
-					<label for="notes" class="form-label">Notes:</label>
-					<textarea type="text"
-							  class="form-control"							 
-							  name="notes"
-							  @bind="@RecipeToAdd.Notes"></textarea>
-				</div>
-
-				<select class="form-select" aria-label="Select a category" @bind="RecipeToAdd.CategoryId">
-					@if (categories != null)
-					{
-						@foreach (var category in categories)
+				<div class="row my-3">
+					<div class="col-2">
+						<label for="ingredients" class="form-label d-flex float-end">Ingredients:</label>
+					</div>
+					<div class="col align-self-center">
+						@foreach (var ingredient in RecipeToAdd.Ingredients)
 						{
-							<option value="@category.Id">@category.CategoryName</option>
+							<div class="input-group">
+								<input type="text"
+									class="form-control name-field"
+									@bind="@ingredient.Name"
+									placeholder="Ingredient Name"/>
+								<input type="number"
+									step="0.01"
+									class="form-control qty-field"
+									@bind="@ingredient.Qty"
+									placeholder="Quantity"/>
+								<input type="text"
+									class="form-control unit-field"
+									@bind="@ingredient.Unit"
+									placeholder="Unit"/>
+							</div>
 						}
-					}
-				</select>
-				<ValidationMessage For="@(() => RecipeToAdd.CategoryId)" />
-
-				<div class="my-4">
-					<label for="source" class="form-label">Source:</label>
-					<input type="text"
-						   name="source"
-						   @bind="@RecipeToAdd.Source">
+					<button class="btn green-btn mt-1"
+						@onclick="AddNewIngredient">Add Ingredient
+					</button>
+				</div>
 				</div>
 
-				<div>
-					<button class="btn btn-lg green-lg-rounded-btn"
-							type="submit">
-						<b>Add</b>
-					</button>
+				<div class="row my-3">
+					<div class="col-2">
+						<label for="notes" class="form-label d-flex float-end">Notes:</label>
+					</div>
+					<div class="col align-self-center">
+						<textarea class="form-control"
+							  name="notes"
+							  cols="30"
+							  rows="5"
+							  @bind="@RecipeToAdd.Notes"></textarea>
+					</div>
+				</div>
+
+				<div class="row my-3">
+					<div class="col-2">
+						<label for="category" class="form-label d-flex float-end">Category:</label>
+					</div>
+					<div class="col align-self-center">
+						<select class="form-select" 
+						aria-label="Select a category" 
+						@bind="RecipeToAdd.CategoryId">
+							@if (categories != null)
+							{
+								@foreach (var category in categories)
+								{
+									<option value="@category.Id">@category.CategoryName</option>
+								}
+							}
+						</select>
+						<ValidationMessage For="@(() => RecipeToAdd.CategoryId)" />
+					</div>
+				</div>
+				<div class="row my-3">
+					<div class="col-2"> 
+						<label for="source" class="form-label d-flex float-end">Source:</label>
+					</div>
+					<div class="col align-self-center">
+						<input type="text"
+						   name="source"
+						   class="form-control"
+						   @bind="@RecipeToAdd.Source">
+					</div>
+				</div>
+
+				<div class="row my-3">
+					<div class="col-2">	</div>
+					<div class="col-6">
+						<button class="btn btn-lg green-btn lg-rounded-btn" id="add-btn"
+							style="width: 160px"
+								type="submit">
+							<b>Add</b>
+						</button>
+					</div>
 				</div>
 			</EditForm>
 		</div>

@@ -22,6 +22,7 @@ namespace Cookbook.Client.Pages
 
 		protected override async Task OnInitializedAsync()
 		{
+			AddNewIngredient();
 			try
 			{
 				categories = await CategoryService.GetCategoriesAsync();

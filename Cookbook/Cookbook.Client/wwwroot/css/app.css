@@ -176,19 +176,24 @@ input {
         box-shadow: none;
     }
 
-.green-lg-rounded-btn {
+.green-btn {
     background-color: #4DC852;
-    border-radius: 24px;
     color: #FFFFF8;
 }
-    .green-lg-rounded-btn:hover {
+
+    .green-btn:hover {
         background-color: #4CC750;
         color: #FFFFF8;
     }
 
-    .green-lg-rounded-btn:focus,
-    .green-lg-rounded-btn:active {
+    .green-btn:focus,
+    .green-btn:active {
         outline: none;
         box-shadow: none;
     }
+
+.lg-rounded-btn {
+    border-radius: 24px;
+}
+
 
