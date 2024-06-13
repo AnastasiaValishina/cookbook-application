@@ -1,4 +1,5 @@
-﻿using Cookbook.Client.Services.Contracts;
+﻿using Cookbook.Client.Services;
+using Cookbook.Client.Services.Contracts;
 using Cookbook.Models.Dtos;
 using Microsoft.AspNetCore.Components;
 
@@ -13,16 +14,21 @@ namespace Cookbook.Client.Pages
 		public IRecipeService RecipeService { get; set; }
 
 		[Inject]
-		public NavigationManager NavigationManager { get; set; }
-		public RecipeDto? Recipe { get; set; } 
+		public ICategoryService CategoryService { get; set; }
 
+		[Inject]
+		public NavigationManager NavigationManager { get; set; }
+
+		public RecipeDto? Recipe { get; set; } 
 		public string? ErrorMessage { get; set; }
+		protected IEnumerable<Category>? categories;
 
 		protected override async Task OnInitializedAsync()
 		{
 			try
 			{
 				Recipe = await RecipeService.GetRecipeByIdAsync(Id);
+				categories = await CategoryService.GetCategoriesAsync();
 			}
 			catch (Exception ex)
 			{
@@ -30,11 +36,19 @@ namespace Cookbook.Client.Pages
 			}
 		}
 
-		protected async Task EditRecipe_Click(RecipeToEditDto recipeToEditDto)
+		protected async Task EditRecipe_Click()
 		{
 			try
 			{
-				await RecipeService.EditRecipe(recipeToEditDto);
+				await RecipeService.EditRecipe(new RecipeToEditDto
+				{
+					RecipeId = Recipe.RecipeId,
+					Title = Recipe.Title,
+					Notes = Recipe.Notes,
+					CategoryId = Recipe.CategoryId,
+					Ingredients = Recipe.Ingredients,
+					Source = Recipe.Source
+				});
 				NavigationManager.NavigateTo($"/RecipeDetails/{Id}");
 			}
 			catch (Exception ex)
@@ -53,7 +67,7 @@ namespace Cookbook.Client.Pages
 			try
 			{
 				await RecipeService.DeleteRecipe(Id);
-				NavigationManager.NavigateTo("/");
+				NavigationManager.NavigateTo("/Recipes");
 			}
 			catch (Exception ex)
 			{

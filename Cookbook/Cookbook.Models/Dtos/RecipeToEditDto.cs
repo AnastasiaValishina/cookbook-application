@@ -3,10 +3,10 @@
 	public class RecipeToEditDto
 	{
 		public int RecipeId { get; set; }
-		public string Title { get; set; } = string.Empty;
-		public string Notes { get; set; } = string.Empty;
+		public string? Title { get; set; }
+		public string? Notes { get; set; }
 		public int CategoryId { get; set; }
 		public List<IngredientDto> Ingredients { get; set; } = [];
-		public string Source { get; set; } = string.Empty;
+		public string? Source { get; set; }
 	}
 }
