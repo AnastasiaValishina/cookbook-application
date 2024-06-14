@@ -7,10 +7,10 @@ namespace Cookbook.Client.Pages
 	public class RegistrationBase : ComponentBase
 	{
 		[Inject]
-		public IAuthService AuthService { get; set; }
+		public required IAuthService AuthService { get; set; }
 
 		[Inject]
-		public NavigationManager NavigationManager { get; set; }
+		public required NavigationManager NavigationManager { get; set; }
 
 		protected UserForRegistrationDto UserForRegistration { get; set; } = new UserForRegistrationDto();
 
