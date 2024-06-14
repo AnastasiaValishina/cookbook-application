@@ -1,6 +1,7 @@
 ﻿using Cookbook.Models.Dtos;
 using Cookbook.Client.Services.Contracts;
 using Microsoft.AspNetCore.Components;
+using System.Text.RegularExpressions;
 
 namespace Cookbook.Client.Pages
 {
@@ -54,5 +55,13 @@ namespace Cookbook.Client.Pages
 			NavigationManager.NavigateTo($"/EditRecipe/{Id}");
 		}
 
+		protected bool IsValidUrl(string url)
+		{
+			if (string.IsNullOrWhiteSpace(url))
+				return false;
+
+			string pattern = @"^(http|https):\/\/[^\s/$.?#].[^\s]*$";
+			return Regex.IsMatch(url, pattern, RegexOptions.IgnoreCase);
+		}
 	}
 }

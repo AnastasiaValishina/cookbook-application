@@ -46,7 +46,14 @@ else
 				</p>
 				<p class="mb-4">
 					<b>Source: </b>
-					@Recipe.Source
+					@if (IsValidUrl(@Recipe.Source))
+					{
+						<a href="@Recipe.Source">@Recipe.Source</a>
+					}
+					else
+					{
+						@Recipe.Source
+					}
 				</p>
 			</div>
 		</div>
