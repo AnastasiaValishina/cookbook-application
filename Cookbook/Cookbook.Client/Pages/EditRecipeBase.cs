@@ -1,5 +1,4 @@
-﻿using Cookbook.Client.Services;
-using Cookbook.Client.Services.Contracts;
+﻿using Cookbook.Client.Services.Contracts;
 using Cookbook.Models.Dtos;
 using Microsoft.AspNetCore.Components;
 
@@ -11,15 +10,15 @@ namespace Cookbook.Client.Pages
 		public int Id { get; set; }
 
 		[Inject]
-		public IRecipeService RecipeService { get; set; }
+		public required IRecipeService RecipeService { get; set; }
 
 		[Inject]
-		public ICategoryService CategoryService { get; set; }
+		public required ICategoryService CategoryService { get; set; }
 
 		[Inject]
-		public NavigationManager NavigationManager { get; set; }
+		public required NavigationManager NavigationManager { get; set; }
 
-		public RecipeDto? Recipe { get; set; } 
+		public RecipeDto Recipe { get; set; } = new RecipeDto();
 		public string? ErrorMessage { get; set; }
 		protected IEnumerable<Category>? categories;
 
@@ -57,11 +56,6 @@ namespace Cookbook.Client.Pages
 			}
 		}
 
-		protected void AddNewIngredient_Click()
-		{
-			Recipe?.Ingredients.Add(new IngredientDto());
-		}
-
 		protected async Task DeleteRecipe_Click()
 		{
 			try
@@ -75,9 +69,14 @@ namespace Cookbook.Client.Pages
 			}
 		}
 
+		protected void AddNewIngredient_Click()
+		{
+			Recipe?.Ingredients.Add(new IngredientDto());
+		}
+
 		protected async Task DeleteIngredient_Click(IngredientDto ingredientToDelete)
 		{
-			Recipe?.Ingredients.Remove(ingredientToDelete);
+			Recipe.Ingredients.Remove(ingredientToDelete);
 		}
 	}
 }

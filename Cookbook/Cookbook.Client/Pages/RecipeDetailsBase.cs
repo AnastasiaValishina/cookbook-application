@@ -11,10 +11,10 @@ namespace Cookbook.Client.Pages
 		public int Id { get; set; }
 		
 		[Inject]
-		public IRecipeService RecipeService { get; set; }
+		public required IRecipeService RecipeService { get; set; }
 
 		[Inject]
-		public NavigationManager NavigationManager { get; set; }
+		public required NavigationManager NavigationManager { get; set; }
 		public RecipeDto? Recipe { get; set; }
 		public string? ErrorMessage { get; set; }
 		protected override async Task OnInitializedAsync()

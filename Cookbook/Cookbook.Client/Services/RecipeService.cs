@@ -94,8 +94,8 @@ namespace Cookbook.Client.Services
 			}
 			catch (Exception ex)
 			{
-
-				throw;
+				Console.WriteLine($"Exception: {ex}");
+				throw new Exception(ex.Message);
 			}
 		}
 

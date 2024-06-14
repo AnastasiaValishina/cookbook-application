@@ -7,13 +7,13 @@ namespace Cookbook.Client.Pages
 	public class AddRecipeBase : ComponentBase
 	{
 		[Inject]
-		public IRecipeService RecipeService { get; set; }
+		public required IRecipeService RecipeService { get; set; }
 
 		[Inject]
-		public ICategoryService CategoryService { get; set; }
+		public required ICategoryService CategoryService { get; set; }
 
 		[Inject]
-		public NavigationManager NavigationManager { get; set; }
+		public required NavigationManager NavigationManager { get; set; }
 
 		protected RecipeToAddDto RecipeToAdd = new();
 
