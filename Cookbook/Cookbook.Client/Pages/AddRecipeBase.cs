@@ -53,7 +53,7 @@ namespace Cookbook.Client.Pages
             RecipeToAdd.Ingredients.Add(new IngredientToAddDto());
 		}
 
-		protected void DeleteIngredient_Click(IngredientToAddDto ingredientToAddDto)
+		protected async Task DeleteIngredient_Click(IngredientToAddDto ingredientToAddDto)
 		{
 			RecipeToAdd.Ingredients.Remove(ingredientToAddDto);
 		}

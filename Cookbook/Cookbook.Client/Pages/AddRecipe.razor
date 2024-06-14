@@ -37,15 +37,17 @@
 						   class="form-control unit-field"
 						   @bind="@ingredient.Unit"
 						   placeholder="Unit" />
-@* 					<button class="btn green-btn" 
-					 	@onclick="DeleteIngredient_Click(ingredient)"> 
-						Delete Ingredient
-					</button> *@
+ 					<button class="btn green-btn"
+							type="button"
+							@onclick="@(async () => await DeleteIngredient_Click(ingredient))">
+					<i class="lni lni-trash-can pt-1" style="font-size: 20px;"></i>
+					</button> 
 				</div>
 			}
 			<button class="btn green-btn mt-1"
+					type="button"
 					@onclick="AddNewIngredient">
-				Add Ingredient
+				<i class="lni lni-plus pt-1"></i>
 			</button>
 		</div>
 	</div>

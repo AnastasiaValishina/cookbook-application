@@ -188,7 +188,7 @@ input {
 
     .green-btn:focus,
     .green-btn:active {
-        outline: none;
+        outline: #2B2C2E;
         box-shadow: none;
     }
 
@@ -226,5 +226,3 @@ input {
 .custom-form-label {
     font-size: 1.1rem;
 }
-
-
