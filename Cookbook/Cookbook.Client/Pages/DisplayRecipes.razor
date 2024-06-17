@@ -1,16 +1,19 @@
 ﻿@inherits DisplayRecipesBase
 
-@foreach (var item in Recipes)
+@if (Recipes is not null)
 {
-	<div class="col-md-2 md-3 mb-2">
-		<a href="/RecipeDetails/@item.RecipeId">
-			<div class="card menu-container">
-				<div class="card-body">
-					<h5 class="card-title mb-3" id="recipe-title">
-						@item.Title
-					</h5>
+	foreach (var item in Recipes)
+	{
+		<div class="col-xxl-2 col-xl-3 col-lg-4 col-sm-6 mb-2">
+			<a href="/RecipeDetails/@item.RecipeId">
+				<div class="card menu-container">
+					<div class="card-body">
+						<h5 class="card-title mb-3" id="recipe-title">
+							@item.Title
+						</h5>
+					</div>
 				</div>
-			</div>
-		</a>
-	</div>
+			</a>
+		</div>
+	}
 }

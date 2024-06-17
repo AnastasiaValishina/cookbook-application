@@ -3,110 +3,112 @@
 
 <h4 class="mb-3">Fill in the following blanks to add new recipe to your database:</h4>
 <h4>@ErrorMessage</h4>
-<EditForm Model="RecipeToAdd" OnValidSubmit="AddRecipe_Click">
-	<div class="row my-3">
-		<div class="col-2">
-			<label for="title" class="form-label d-flex float-end custom-form-label">Title:</label>
+<div class="m-0 me-md-5">
+	<EditForm Model="RecipeToAdd" OnValidSubmit="AddRecipe_Click">
+		<div class="row my-3">
+			<div class="col-2">
+				<label for="title" class="form-label d-flex float-end custom-form-label">Title:</label>
+			</div>
+			<div class="col align-self-center">
+				<input type="text"
+					   class="form-control"
+					   name="title"
+					   @bind="@RecipeToAdd.Title">
+				<ValidationMessage For="@(() => RecipeToAdd.Title)" />
+			</div>
 		</div>
-		<div class="col align-self-center">
-			<input type="text"
-				   class="form-control"
-				   name="title"
-				   @bind="@RecipeToAdd.Title">
-			<ValidationMessage For="@(() => RecipeToAdd.Title)" />
-		</div>
-	</div>
-	<div class="row my-3">
-		<div class="col-2">
-			<label for="ingredients" class="form-label d-flex float-end custom-form-label">Ingredients:</label>
-		</div>
-		<div class="col align-self-center">
-			@foreach (var ingredient in RecipeToAdd.Ingredients)
-			{
-				<div class="input-group">
-					<input type="text"
-						   class="form-control name-field"
-						   @bind="@ingredient.Name"
-						   placeholder="Ingredient Name" />
-					<input type="number"
-						   step="0.01"
-						   class="form-control qty-field"
-						   @bind="@ingredient.Qty"
-						   placeholder="Quantity" />
-					<input type="text"
-						   class="form-control unit-field"
-						   @bind="@ingredient.Unit"
-						   placeholder="Unit" />
- 					<button class="btn green-btn"
-							type="button"
-							@onclick="@(async () => await DeleteIngredient_Click(ingredient))">
-					<i class="lni lni-trash-can pt-1" style="font-size: 20px;"></i>
-					</button> 
-				</div>
-			}
-			<button class="btn green-btn mt-1"
-					type="button"
-					@onclick="AddNewIngredient">
-				<i class="lni lni-plus pt-1"></i>
-			</button>
-		</div>
-	</div>
-
-	<div class="row my-3">
-		<div class="col-2">
-			<label for="notes" class="form-label d-flex float-end custom-form-label">Notes:</label>
-		</div>
-		<div class="col align-self-center">
-			<textarea class="form-control"
-					  name="notes"
-					  cols="30"
-					  rows="5"
-					  @bind="@RecipeToAdd.Notes"></textarea>
-		</div>
-	</div>
-
-	<div class="row my-3">
-		<div class="col-2">
-			<label for="category" class="form-label d-flex float-end custom-form-label">Category:</label>
-		</div>
-		<div class="col align-self-center">
-			<select class="form-select"
-					aria-label="Select a category"
-					@bind="RecipeToAdd.CategoryId">
-				@if (categories != null)
+		<div class="row my-3">
+			<div class="col-2">
+				<label for="ingredients" class="form-label d-flex float-end custom-form-label">Ingredients:</label>
+			</div>
+			<div class="col align-self-center">
+				@foreach (var ingredient in RecipeToAdd.Ingredients)
 				{
-					@foreach (var category in categories)
-					{
-						<option value="@category.Id">@category.CategoryName</option>
-					}
+					<div class="input-group">
+						<input type="text"
+							   class="form-control name-field"
+							   @bind="@ingredient.Name"
+							   placeholder="Ingredient Name" />
+						<input type="number"
+							   step="0.01"
+							   class="form-control qty-field"
+							   @bind="@ingredient.Qty"
+							   placeholder="Quantity" />
+						<input type="text"
+							   class="form-control unit-field"
+							   @bind="@ingredient.Unit"
+							   placeholder="Unit" />
+						<button class="btn green-btn"
+								type="button"
+								@onclick="@(async () => await DeleteIngredient_Click(ingredient))">
+							<i class="lni lni-trash-can pt-1" style="font-size: 20px;"></i>
+						</button>
+					</div>
 				}
-			</select>
-			<ValidationMessage For="@(() => RecipeToAdd.CategoryId)" />
+				<button class="btn green-btn mt-1"
+						type="button"
+						@onclick="AddNewIngredient">
+					<i class="lni lni-plus pt-1"></i>
+				</button>
+			</div>
 		</div>
-	</div>
-	<div class="row my-3">
-		<div class="col-2">
-			<label for="source" class="form-label d-flex float-end custom-form-label">Source:</label>
-		</div>
-		<div class="col align-self-center">
-			<input type="text"
-				   name="source"
-				   class="form-control"
-				   @bind="@RecipeToAdd.Source">
-		</div>
-	</div>
 
-	<div class="row my-3">
-		<div class="col-2">	</div>
-		<div class="col-6">
-			<button class="btn btn-lg green-btn lg-rounded-btn" id="add-btn"
-					style="width: 160px"
-					type="submit">
-				Save recipe
-			</button>
+		<div class="row my-3">
+			<div class="col-2">
+				<label for="notes" class="form-label d-flex float-end custom-form-label">Notes:</label>
+			</div>
+			<div class="col align-self-center">
+				<textarea class="form-control"
+						  name="notes"
+						  cols="30"
+						  rows="5"
+						  @bind="@RecipeToAdd.Notes"></textarea>
+			</div>
 		</div>
-	</div>
-</EditForm>
+
+		<div class="row my-3">
+			<div class="col-2">
+				<label for="category" class="form-label d-flex float-end custom-form-label">Category:</label>
+			</div>
+			<div class="col align-self-center">
+				<select class="form-select"
+						aria-label="Select a category"
+						@bind="RecipeToAdd.CategoryId">
+					@if (categories != null)
+					{
+						@foreach (var category in categories)
+						{
+							<option value="@category.Id">@category.CategoryName</option>
+						}
+					}
+				</select>
+				<ValidationMessage For="@(() => RecipeToAdd.CategoryId)" />
+			</div>
+		</div>
+		<div class="row my-3">
+			<div class="col-2">
+				<label for="source" class="form-label d-flex float-end custom-form-label">Source:</label>
+			</div>
+			<div class="col align-self-center">
+				<input type="text"
+					   name="source"
+					   class="form-control"
+					   @bind="@RecipeToAdd.Source">
+			</div>
+		</div>
+
+		<div class="row my-3">
+			<div class="col-2">	</div>
+			<div class="col-6">
+				<button class="btn btn-lg green-btn lg-rounded-btn" id="add-btn"
+						style="width: 160px"
+						type="submit">
+					Save recipe
+				</button>
+			</div>
+		</div>
+	</EditForm>
+</div>
 
 
 
