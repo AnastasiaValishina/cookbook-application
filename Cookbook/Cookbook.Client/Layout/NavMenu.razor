@@ -1,52 +1,86 @@
-﻿<div class="top-row ps-3 navbar text-center">
-    <div class="container-fluid">
-        <a class="navbar-brand d-flex flex-column align-items-center" href="Recipes" id="logo_name"> 
-            <img src="Images/logo.png" alt="Cook It Logo" id="logo_image">
-            Cook It
-        </a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
+﻿@using Cookbook.Client.Services;
+@inject IAuthService AuthService
+
+<div class="top-row ps-3 navbar text-center">
+	<div class="container-fluid">
+		<a class="navbar-brand d-flex flex-column align-items-center" href="Recipes" id="logo_name">
+			<img src="Images/logo.png" alt="Cook It Logo" id="logo_image">
+			Cook It
+		</a>
+		<button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+	</div>
 </div>
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="Recipes">
-                <span class="lni lni-service" aria-hidden="true"></span> My recipes
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="AddRecipe">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Add new recipe
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="Register">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Registration
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="Login">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
-            </NavLink>
-        </div>
-    </nav>
+	<nav class="flex-column">
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+				<span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+			</NavLink>
+		</div>
+		@if (isLoggedIn)
+		{
+			<div class="nav-item px-3">
+				<NavLink class="nav-link" href="Recipes">
+					<span class="lni lni-service" aria-hidden="true"></span> My recipes
+				</NavLink>
+			</div>
+			<div class="nav-item px-3">
+				<NavLink class="nav-link" href="AddRecipe">
+					<span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Add new recipe
+				</NavLink>
+			</div>
+			<div class="nav-item px-3">
+				<NavLink class="nav-link" href="Login">
+					<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> <a @onclick="LogoutAsync">Logout</a>
+				</NavLink>
+			</div>
+		}
+		else
+		{
+			<div class="nav-item px-3">
+				<NavLink class="nav-link" href="Register">
+					<span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Registration
+				</NavLink>
+			</div>
+			<div class="nav-item px-3">
+				<NavLink class="nav-link" href="Login">
+					<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
+				</NavLink>
+			</div>
+		}
+	</nav>
 </div>
 
 @code {
-    private bool collapseNavMenu = true;
+	private bool collapseNavMenu = true;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+	private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
+	private string? username;
+	private bool isLoggedIn => username is not null;
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		AuthService.LoginChange += name =>
+		{
+			username = name;
+
+			StateHasChanged();
+		};
+	}
+
+	private void ToggleNavMenu()
+	{
+		collapseNavMenu = !collapseNavMenu;
+	}
+
+	private async Task LogoutAsync()
+	{
+		await AuthService.LogoutAsync();
+	}
 }

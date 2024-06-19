@@ -31,7 +31,7 @@ h1:focus {
 }
 
 a, .btn-link {
-    color: #0071c1;
+    color: #2b2c2e;
 }
 
 .btn-primary {
@@ -182,7 +182,7 @@ input {
 }
 
     .green-btn:hover {
-        background-color: #4CC750;
+        background-color: #41AA44;
         color: #FFFFF8;
     }
 
