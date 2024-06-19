@@ -2,6 +2,16 @@
     background-color: #4DC852;
     color: #FFFFF8;
 }
+    .input-group-append:hover {
+        background-color: #41AA44;
+        color: #FFFFF8;
+    }
+
+    .input-group-append:focus,
+    .input-group-append:active {
+        outline: #2B2C2E;
+        box-shadow: none;
+    }
 
 #search-block {
     width: 40%;

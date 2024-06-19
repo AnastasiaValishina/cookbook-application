@@ -192,6 +192,22 @@ input {
         box-shadow: none;
     }
 
+.gray-btn {
+    background-color: #E4EDEE;
+    border-color: #E4EDEE;
+    color: #2B2C2E;
+}
+    .gray-btn:hover {
+        background-color: #41AA44;
+        color: #FFFFF8;
+    }
+
+    .gray-btn:focus,
+    .gray-btn:active {
+        outline: #2B2C2E;
+        box-shadow: none;
+    }
+
 .lg-rounded-btn {
     border-radius: 24px;
 }
