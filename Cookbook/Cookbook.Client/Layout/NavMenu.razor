@@ -15,11 +15,6 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
 	<nav class="flex-column">
-		<div class="nav-item px-3">
-			<NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-				<span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-			</NavLink>
-		</div>
 		@if (isLoggedIn)
 		{
 			<div class="nav-item px-3">
@@ -29,12 +24,12 @@
 			</div>
 			<div class="nav-item px-3">
 				<NavLink class="nav-link" href="AddRecipe">
-					<span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Add new recipe
+					<span class="lni lni-plus" aria-hidden="true"></span> Add new recipe
 				</NavLink>
 			</div>
 			<div class="nav-item px-3">
 				<NavLink class="nav-link" href="Login">
-					<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> <a @onclick="LogoutAsync">Logout</a>
+					<span class="lni lni-chef-hat" aria-hidden="true"></span> <a @onclick="LogoutAsync">Logout</a>
 				</NavLink>
 			</div>
 		}
@@ -42,12 +37,12 @@
 		{
 			<div class="nav-item px-3">
 				<NavLink class="nav-link" href="Register">
-					<span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Registration
+					<span class="lni lni-restaurant" aria-hidden="true"></span> Registration
 				</NavLink>
 			</div>
 			<div class="nav-item px-3">
 				<NavLink class="nav-link" href="Login">
-					<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
+					<span class="lni lni-chef-hat" aria-hidden="true"></span> Login
 				</NavLink>
 			</div>
 		}
