@@ -3,7 +3,9 @@
 
 @if (isLoggedIn)
 {
-	<span>Welcome @username <a @onclick="LogoutAsync">Logout</a></span>
+	<span class="me-4"><b>Welcome, @username</b></span>
+
+	<a @onclick="LogoutAsync">Logout</a>
 }
 else
 {

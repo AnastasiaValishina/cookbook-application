@@ -1,5 +1,6 @@
 ﻿using Cookbook.Api.Data;
 using Cookbook.Api.Models;
+using Cookbook.Models.Dtos;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
@@ -18,7 +19,7 @@ namespace Cookbook.Api.Controllers
 		}
 
 		[HttpPut("UpsertUser")]
-		public IActionResult UpsertUser(User user)
+		public async Task<IActionResult> UpsertUser(User user)
 		{
 			string sql = @"EXEC CookbookAppSchema.spUser_Upsert 
 					@UserName = @UserNameParam, 
@@ -30,7 +31,7 @@ namespace Cookbook.Api.Controllers
 			sqlParameters.Add("@EmailParam", user.Email, DbType.String);
 			sqlParameters.Add("@UserIdParam", user.UserId, DbType.Int32);
 
-			if (_dapper.ExecuteSqlWithParameters(sql, sqlParameters))
+			if (await _dapper.ExecuteSqlWithParametersAsync(sql, sqlParameters))
 			{
 				return Ok();
 			}
@@ -39,7 +40,7 @@ namespace Cookbook.Api.Controllers
 		}
 
 		[HttpDelete("DeleteUser/{userId}")]
-		public IActionResult DeleteUser(int userId)
+		public async Task<IActionResult> DeleteUser(int userId)
 		{
 			string sql = @"EXEC CookbookAppSchema.spUser_Delete
             @UserId = @UserIdParameter";
@@ -47,12 +48,25 @@ namespace Cookbook.Api.Controllers
 			DynamicParameters sqlParameters = new DynamicParameters();
 			sqlParameters.Add("@UserIdParameter", userId, DbType.Int32);
 
-			if (_dapper.ExecuteSqlWithParameters(sql, sqlParameters))
+			if (await _dapper.ExecuteSqlWithParametersAsync(sql, sqlParameters))
 			{
 				return Ok();
 			}
 
 			throw new Exception("Failed to Delete User");
+		}
+
+		[HttpGet("GetUser/{userId}")]
+		public async Task<ActionResult<User>> GetUser(int userId)
+		{
+			string sql = @"EXEC CookbookAppSchema.spUser_Get @UserId = @UserIdParameter";
+
+			DynamicParameters sqlParameters = new DynamicParameters();
+			sqlParameters.Add("@UserIdParameter", userId, DbType.Int32);
+
+			var user = await _dapper.LoadDataSingleWithParamsAsync<User>(sql, sqlParameters);
+
+			return user;
 		}
 	}
 }

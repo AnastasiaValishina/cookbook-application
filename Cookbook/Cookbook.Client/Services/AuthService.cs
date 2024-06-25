@@ -1,7 +1,9 @@
 ﻿using Blazored.SessionStorage;
+using Cookbook.Api.Models;
 using Cookbook.Client.Services.Contracts;
 using Cookbook.Models.Dtos;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Net.Http.Json;
 
 namespace Cookbook.Client.Services
@@ -13,7 +15,7 @@ namespace Cookbook.Client.Services
 		private const string JWT_KEY = nameof(JWT_KEY);
 		private string? _jwtCache;
 
-		public event Action<string?>? LoginChange; // userId (int?) or null
+		public event Action<string?>? LoginChange; // username or null
 
 		public AuthService(IHttpClientFactory factory, ISessionStorageService sessionStorageService)
 		{
@@ -66,7 +68,11 @@ namespace Cookbook.Client.Services
 
 			await _sessionStorageService.SetItemAsync(JWT_KEY, content.JwtToken);
 
-			LoginChange?.Invoke(GetUserId(content.JwtToken));
+			var userId = GetUserId(content.JwtToken);
+
+			var user = await GetUser(userId);
+
+			LoginChange?.Invoke(user.UserName);
 
 			return content.Expiration;
 		}
@@ -103,6 +109,36 @@ namespace Cookbook.Client.Services
 				return userIdClaim.Value;
 
 			return null;
+		}
+
+		private async Task<User>? GetUser(string id)
+		{
+			try
+			{
+				var response = await _factory.CreateClient("ServerApi")
+					.GetAsync($"User/GetUser/{id}");
+
+				if (response.IsSuccessStatusCode)
+				{
+					if (response.StatusCode == HttpStatusCode.NoContent)
+					{
+						return default;
+					}
+
+					return await response.Content.ReadFromJsonAsync<User>();
+				}
+				else
+				{
+					var message = await response.Content.ReadAsStringAsync();
+					throw new Exception(message);
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception: {ex}");
+				throw new Exception(ex.Message);
+			}
+
 		}
 	}
 }

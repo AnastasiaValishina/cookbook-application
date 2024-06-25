@@ -65,5 +65,20 @@ BEGIN
 END;
 GO
 
--- EXEC CookbookAppSchema.spUserId_Get @Email = ''
+CREATE OR ALTER PROCEDURE CookbookAppSchema.spUser_Get
+    @UserId INT = NULL
+AS
+BEGIN
+    SELECT [Users].[UserId],
+        [Users].[UserName],
+        [Users].[Email] 
+            FROM CookbookAppSchema.Users AS Users
+                WHERE Users.UserId = @UserId
+END;
+GO
+
+-- EXEC CookbookAppSchema.spUser_Get @UserId = 6
+
+
+
 

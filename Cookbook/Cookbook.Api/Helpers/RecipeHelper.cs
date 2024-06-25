@@ -1,7 +1,6 @@
 ﻿using Cookbook.Api.Data;
 using Cookbook.Models.Dtos;
 using Dapper;
-using Microsoft.AspNetCore.Mvc;
 using System.Data;
 
 namespace Cookbook.Api.Helpers
