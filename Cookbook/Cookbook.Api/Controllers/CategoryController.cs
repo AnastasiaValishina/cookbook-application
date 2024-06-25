@@ -20,9 +20,7 @@ namespace Cookbook.Api.Controllers
 		[HttpGet("GetCategories")]
 		public async Task<IEnumerable<Category>> GetCategories()
 		{
-			string sql = @"SELECT 
-				[Id],
-				[CategoryName] FROM CookbookAppSchema.Categories";
+			string sql = @"EXEC CookbookAppSchema.spCategory_Get";
 
 			var categories = await _dapper.LoadDataAsync<Category>(sql);
 			return categories;

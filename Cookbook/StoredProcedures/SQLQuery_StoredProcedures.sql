@@ -3,7 +3,7 @@ USE CookbookAppDatabase
 GO
 
 CREATE OR ALTER PROCEDURE CookbookAppSchema.spRecipes_Get
-    @UserId INT = NULL
+    @UserId INT 
     , @RecipeId INT = NULL
 AS
 BEGIN
@@ -20,11 +20,11 @@ BEGIN
         FROM CookbookAppSchema.Recipes as Recipes
 		INNER JOIN CookbookAppSchema.Categories as Categories
 		ON Recipes.CategoryId = Categories.Id
-            WHERE Recipes.UserId = ISNULL(@UserId, Recipes.UserId)
+            WHERE Recipes.UserId = @UserId
                 AND Recipes.RecipeId = ISNULL(@RecipeId, Recipes.RecipeId)
 END
 GO
--- EXEC CookbookAppSchema.spRecipes_Get @UserId = 101
+-- EXEC CookbookAppSchema.spRecipes_Get @UserId = 6, @RecipeId = 12
 -- EXEC CookbookAppSchema.spRecipes_Get @RecipeId = 2023
 
 
@@ -73,7 +73,7 @@ BEGIN
             @Source)
 END
 GO
--- EXEC CookbookAppSchema.spRecipes_Add @UserId = 101, @Title = 'sp test', @Notes = 'sp test', @CategoryId = 1, @Source = 'sp test';
+-- EXEC CookbookAppSchema.spRecipe_Add @UserId = 101, @Title = 'sp test', @Notes = 'sp test', @CategoryId = 1, @Source = 'sp test';
 
 
 CREATE OR ALTER PROCEDURE CookbookAppSchema.spIngredient_Upsert
@@ -112,6 +112,7 @@ GO
 
 
 CREATE OR ALTER PROCEDURE CookbookAppSchema.spRecipes_GetBySearch
+    @UserId INT = NULL,
     @SearchParam NVARCHAR(MAX) = NULL
 AS
 BEGIN
@@ -130,14 +131,15 @@ BEGIN
         ON Recipes.CategoryId = Categories.Id
     LEFT JOIN CookbookAppSchema.Ingredients Ingredients 
         ON Recipes.RecipeId = Ingredients.RecipeId
-            WHERE Recipes.Title LIKE '%' + @SearchParam + '%'
+            WHERE (Recipes.UserId = ISNULL(@UserId, Recipes.UserId))
+                AND (Recipes.Title LIKE '%' + @SearchParam + '%'
                 OR Recipes.Notes LIKE '%' + @SearchParam + '%'
                 OR Categories.CategoryName LIKE '%' + @SearchParam + '%'
                 OR EXISTS (
                     SELECT 1
                     FROM CookbookAppSchema.Ingredients
                     WHERE RecipeId = Recipes.RecipeId
-                    AND Ingredients.Name LIKE '%' + @SearchParam + '%'
+                    AND Ingredients.Name LIKE '%' + @SearchParam + '%')
             );
 END
 GO
@@ -167,7 +169,8 @@ GO
 -- EXEC CookbookAppSchema.spIngredient_Delete @IngredientId = 
 
 CREATE OR ALTER PROCEDURE CookbookAppSchema.spRecipes_Update
-    @RecipeId INT 
+    @UserId INT = NULL
+    , @RecipeId INT 
     , @Title NVARCHAR(MAX)
     , @Notes NVARCHAR(MAX)
     , @CategoryId INT
@@ -180,8 +183,18 @@ BEGIN
         CategoryId = @CategoryId,
         RecipeUpdated = GETDATE(),
         Source = @Source
-            WHERE RecipeId = @RecipeId
+            WHERE (UserId = @UserId
+                AND RecipeId = @RecipeId)
 END
 GO
 -- EXEC CookbookAppSchema.spRecipes_Update @RecipeId = , @Title '', @Notes = '', @CategoryId = '', @Source = '' 
 
+CREATE OR ALTER PROCEDURE CookbookAppSchema.spCategory_Get
+AS
+BEGIN
+    SELECT 
+		[Categories].[Id],
+		[Categories].[CategoryName] 
+            FROM CookbookAppSchema.Categories as Categories
+END
+GO

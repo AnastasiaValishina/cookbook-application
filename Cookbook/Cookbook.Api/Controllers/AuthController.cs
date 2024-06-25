@@ -25,13 +25,6 @@ namespace Cookbook.Api.Controllers
 		}
 
 		[AllowAnonymous]
-		[HttpGet("Connection")]
-		public DateTime Connection()
-		{
-			return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
-		}
-
-		[AllowAnonymous]
 		[HttpPost("Register")]
 		public async Task<IActionResult> Register(UserForRegistrationDto userForRegistration)
 		{

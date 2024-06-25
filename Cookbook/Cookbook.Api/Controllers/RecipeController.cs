@@ -21,12 +21,6 @@ namespace Cookbook.Api.Controllers
 			_dapper = new DataContextDapper(config);
 			_recipeHelper = new RecipeHelper(config);
 		}
-		/*
-				[HttpGet("Connection")]
-				public DateTime Connection()
-				{
-					return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
-				}*/
 
 		[HttpGet("MyRecipes/{recipeId}")]
 		public async Task<ActionResult<IEnumerable<RecipeDto>>> GetMyRecipesAsync(int recipeId = 0)
