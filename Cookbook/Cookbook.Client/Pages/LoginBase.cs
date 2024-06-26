@@ -24,7 +24,7 @@ namespace Cookbook.Client.Pages
 				Expiration = await AuthService.LoginAsync(UserForLogin);
 
 				ErrorMessage = null;
-				NavigationManager.NavigateTo($"/Recipes");
+				NavigationManager.NavigateTo("/Recipes");
 			}
 			catch (Exception ex)
 			{

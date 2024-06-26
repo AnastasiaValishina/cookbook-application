@@ -2,9 +2,10 @@
 @inherits AddRecipeBase
 
 <h4 class="mb-3">Fill in the following blanks to add new recipe to your database:</h4>
-<h4>@ErrorMessage</h4>
+
 <div class="m-0 me-md-5">
 	<EditForm Model="RecipeToAdd" OnValidSubmit="AddRecipe_Click">
+		<DataAnnotationsValidator />
 		<div class="row my-3">
 			<div class="col-2">
 				<label for="title" class="form-label d-flex float-end custom-form-label">Title:</label>
@@ -105,6 +106,7 @@
 						type="submit">
 					Save recipe
 				</button>
+				<p style="color:red;">@ErrorMessage</p>
 			</div>
 		</div>
 	</EditForm>

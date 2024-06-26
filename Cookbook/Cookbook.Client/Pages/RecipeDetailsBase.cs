@@ -42,7 +42,7 @@ namespace Cookbook.Client.Pages
 			try
 			{
 				await RecipeService.DeleteRecipe(Id);
-				NavigationManager.NavigateTo("/");
+				NavigationManager.NavigateTo("/Recipes");
 			}
 			catch (Exception ex)
 			{

@@ -15,7 +15,7 @@ namespace Cookbook.Client.Pages
 		[Inject]
 		public required NavigationManager NavigationManager { get; set; }
 
-		protected RecipeToAddDto RecipeToAdd = new();
+		protected RecipeToAddDto RecipeToAdd = new RecipeToAddDto { CategoryId = 1 };
 
 		protected IEnumerable<Category>? categories;
 		public string? ErrorMessage { get; set; }
