@@ -1,4 +1,5 @@
-﻿using Cookbook.Client.Services.Contracts;
+﻿using Cookbook.Client.Pages;
+using Cookbook.Client.Services.Contracts;
 using Cookbook.Models.Dtos;
 using System.Net;
 using System.Net.Http.Json;
@@ -14,7 +15,7 @@ namespace Cookbook.Client.Services
 			_httpClient = factory.CreateClient("ServerApi");
 		}
 
-		public async Task<IEnumerable<RecipeDto>> GetRecipesAsync()
+		public async Task<IEnumerable<RecipeDto?>> GetRecipesAsync()
 		{
 			try
 			{
@@ -27,7 +28,9 @@ namespace Cookbook.Client.Services
 						return Enumerable.Empty<RecipeDto>();
 					}
 
-					return await response.Content.ReadFromJsonAsync<IEnumerable<RecipeDto>>();
+					var recipes = await response.Content.ReadFromJsonAsync<IEnumerable<RecipeDto>>();
+
+					return recipes ?? Enumerable.Empty<RecipeDto>();
 				}
 				else
 				{
@@ -42,7 +45,7 @@ namespace Cookbook.Client.Services
 			}
 		}
 
-		public async Task<RecipeDto> GetRecipeByIdAsync(int id)
+		public async Task<RecipeDto?> GetRecipeByIdAsync(int id)
 		{
 			try
 			{
@@ -52,11 +55,11 @@ namespace Cookbook.Client.Services
 				{
 					if (response.StatusCode == HttpStatusCode.NoContent)
 					{
-						return default(RecipeDto);
+						return default;
 					}
 
 					var recipes = await response.Content.ReadFromJsonAsync<List<RecipeDto>>();
-					return recipes.FirstOrDefault();
+					return recipes?.FirstOrDefault();
 				}
 				else
 				{
@@ -71,7 +74,7 @@ namespace Cookbook.Client.Services
 			}
 		}
 
-		public async Task<RecipeDto> AddRecipeAsync(RecipeToAddDto recipeToAddDto)
+		public async Task<RecipeDto?> AddRecipeAsync(RecipeToAddDto recipeToAddDto)
 		{
 			try
 			{
@@ -81,7 +84,7 @@ namespace Cookbook.Client.Services
 				{
 					if (response.StatusCode == HttpStatusCode.NoContent)
 					{
-						return default(RecipeDto);
+						return default;
 					}
 
 					return await response.Content.ReadFromJsonAsync<RecipeDto>();
@@ -99,7 +102,7 @@ namespace Cookbook.Client.Services
 			}
 		}
 
-		public async Task<RecipeDto> DeleteRecipe(int id)
+		public async Task<RecipeDto?> DeleteRecipe(int id)
 		{
 			try
 			{
@@ -148,7 +151,7 @@ namespace Cookbook.Client.Services
 			}
 		}
 
-		public async Task<IEnumerable<RecipeDto>> GetRecipeBySearchAsync(string searchParam)
+		public async Task<IEnumerable<RecipeDto?>> GetRecipeBySearchAsync(string searchParam)
 		{				
 			try
 			{
@@ -161,7 +164,9 @@ namespace Cookbook.Client.Services
 						return Enumerable.Empty<RecipeDto>();
 					}
 
-					return await response.Content.ReadFromJsonAsync<IEnumerable<RecipeDto>>();
+					var recipes = await response.Content.ReadFromJsonAsync<IEnumerable<RecipeDto>>();
+
+					return recipes ?? Enumerable.Empty<RecipeDto>();
 				}
 				else
 				{

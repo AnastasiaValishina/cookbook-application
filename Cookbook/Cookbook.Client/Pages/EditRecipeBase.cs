@@ -18,7 +18,7 @@ namespace Cookbook.Client.Pages
 		[Inject]
 		public required NavigationManager NavigationManager { get; set; }
 
-		public RecipeDto Recipe { get; set; } = new RecipeDto();
+		public RecipeDto? Recipe { get; set; } = new RecipeDto();
 		public string? ErrorMessage { get; set; }
 		protected IEnumerable<Category>? categories;
 
@@ -41,7 +41,7 @@ namespace Cookbook.Client.Pages
 			{
 				await RecipeService.EditRecipe(new RecipeToEditDto
 				{
-					RecipeId = Recipe.RecipeId,
+					RecipeId = Recipe!.RecipeId,
 					Title = Recipe.Title,
 					Notes = Recipe.Notes,
 					CategoryId = Recipe.CategoryId,
@@ -76,7 +76,7 @@ namespace Cookbook.Client.Pages
 
 		protected async Task DeleteIngredient_Click(IngredientDto ingredientToDelete)
 		{
-			Recipe.Ingredients.Remove(ingredientToDelete);
+			Recipe?.Ingredients.Remove(ingredientToDelete);
 		}
 	}
 }

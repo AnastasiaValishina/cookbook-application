@@ -20,7 +20,7 @@ else
 					<label for="title" class="form-label d-flex float-end custom-form-label">Title:</label>
 				</div>
 				<div class="col align-self-center">
-					<input type="text" class="form-control" name="title" @bind="@Recipe.Title">
+					<input type="text" class="form-control" name="title" @bind="@Recipe!.Title">
 					<ValidationMessage For="@(() => Recipe.Title)" />
 				</div>
 			</div>

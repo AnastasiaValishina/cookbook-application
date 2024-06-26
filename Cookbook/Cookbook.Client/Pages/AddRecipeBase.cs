@@ -38,8 +38,8 @@ namespace Cookbook.Client.Pages
 		{
 			try
 			{
-				RecipeDto recipe = await RecipeService.AddRecipeAsync(RecipeToAdd);
-				NavigationManager.NavigateTo($"/RecipeDetails/{recipe.RecipeId}");
+				RecipeDto? recipe = await RecipeService.AddRecipeAsync(RecipeToAdd);
+				NavigationManager.NavigateTo($"/RecipeDetails/{recipe?.RecipeId}");
 				ErrorMessage = null;
 			}
 			catch
