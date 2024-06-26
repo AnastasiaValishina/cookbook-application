@@ -14,31 +14,6 @@ namespace Cookbook.Api.Data
 			_config = config;
 		}
 
-		public IEnumerable<T> LoadData<T>(string sql)
-		{
-			IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING));
-			return dbConnection.Query<T>(sql);
-		}
-
-
-		public T LoadDataSingle<T>(string sql)
-		{
-			IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING));
-			return dbConnection.QuerySingle<T>(sql);
-		}
-
-		public bool ExecuteSql(string sql)
-		{
-			IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING));
-			return dbConnection.Execute(sql) > 0;
-		}
-
-		public int ExecuteSqlWithRowCount(string sql)
-		{
-			IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING));
-			return dbConnection.Execute(sql);
-		}
-
 		public bool ExecuteSqlWithParameters(string sql, DynamicParameters parameters)
 		{
 			IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING));
@@ -58,30 +33,6 @@ namespace Cookbook.Api.Data
 			using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING)))
 			{
 				return await dbConnection.QueryAsync<T>(sql);
-			}
-		}
-
-		public async Task<T> LoadDataSingleAsync<T>(string sql)
-		{
-			using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING)))
-			{
-				return await dbConnection.QuerySingleAsync<T>(sql);
-			}
-		}
-
-		public async Task<bool> ExecuteSqlAsync(string sql)
-		{
-			using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING)))
-			{
-				return await dbConnection.ExecuteAsync(sql) > 0;
-			}
-		}
-
-		public async Task<int> ExecuteSqlWithIdAsync(string sql)
-		{
-			using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(CONNECTION_STRING)))
-			{
-				return await dbConnection.ExecuteScalarAsync<int>(sql);
 			}
 		}
 
