@@ -71,7 +71,7 @@ namespace Cookbook.Api.Helpers
 			};
 		}
 
-		public bool SetPassword(UserForLoginDto userForSetPassword)
+		public async Task<bool> SetPassword(UserForLoginDto userForSetPassword)
 		{
 			byte[] passwordSalt = new byte[128 / 8];
 			using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
@@ -92,7 +92,7 @@ namespace Cookbook.Api.Helpers
 			sqlParameters.Add("@PasswordHashParam", passwordHash, DbType.Binary);
 			sqlParameters.Add("@PasswordSaltParam", passwordSalt, DbType.Binary);
 
-			return _dapper.ExecuteSqlWithParameters(sqlAddAuth, sqlParameters);
+			return await _dapper.ExecuteSqlWithParametersAsync(sqlAddAuth, sqlParameters);
 		}
 	}
 }

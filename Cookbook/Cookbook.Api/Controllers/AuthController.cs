@@ -47,7 +47,7 @@ namespace Cookbook.Api.Controllers
 						Password = userForRegistration.Password
 					};
 
-					if (_authHelper.SetPassword(userForSetPassword))
+					if (await _authHelper.SetPassword(userForSetPassword))
 					{
 						string sqlAddUser = @"EXEC CookbookAppSchema.spUser_Upsert
 							@UserName = @UserNameParameter, 
@@ -70,9 +70,9 @@ namespace Cookbook.Api.Controllers
 		}
 
 		[HttpPut("ResetPassword")]
-		public IActionResult ResetPassword(UserForLoginDto userForSetPassword) // add new model with password and password confirm
+		public async Task<IActionResult> ResetPassword(UserForLoginDto userForSetPassword) // add new model with password and password confirm
 		{
-			if (_authHelper.SetPassword(userForSetPassword))
+			if (await _authHelper.SetPassword(userForSetPassword))
 			{
 				return Ok();
 			}
