@@ -75,4 +75,22 @@ INSERT INTO CookbookAppSchema.Categories(
     [CategoryName]
     ) VALUES ('Salads');
 
+INSERT INTO CookbookAppSchema.Categories(
+    [CategoryName]
+    ) VALUES ('Main Course');
 
+INSERT INTO CookbookAppSchema.Categories(
+    [CategoryName]
+    ) VALUES ('Drinks');
+
+INSERT INTO CookbookAppSchema.Categories(
+    [CategoryName]
+    ) VALUES ('Side dishes');
+
+INSERT INTO CookbookAppSchema.Categories(
+    [CategoryName]
+    ) VALUES ('Baked goods');
+
+INSERT INTO CookbookAppSchema.Categories(
+    [CategoryName]
+    ) VALUES ('Snacks');
