@@ -70,9 +70,13 @@ namespace Cookbook.Client.Services
 
 			var userId = GetUserId(content.JwtToken);
 
-			var user = await GetUser(userId);
+			if (userId != null)
+			{
+				var user = await GetUser(userId);
 
-			LoginChange?.Invoke(user.UserName);
+				if (user != null)
+					LoginChange?.Invoke(user.UserName);
+			}
 
 			return content.Expiration;
 		}
@@ -111,7 +115,7 @@ namespace Cookbook.Client.Services
 			return null;
 		}
 
-		private async Task<User>? GetUser(string id)
+		private async Task<User?> GetUser(string id)
 		{
 			try
 			{
@@ -122,10 +126,11 @@ namespace Cookbook.Client.Services
 				{
 					if (response.StatusCode == HttpStatusCode.NoContent)
 					{
-						return default;
+						return null;
 					}
 
-					return await response.Content.ReadFromJsonAsync<User>();
+					var user = await response.Content.ReadFromJsonAsync<User>();
+					return user ?? null;
 				}
 				else
 				{
@@ -138,7 +143,6 @@ namespace Cookbook.Client.Services
 				Console.WriteLine($"Exception: {ex}");
 				throw new Exception(ex.Message);
 			}
-
 		}
 	}
 }
