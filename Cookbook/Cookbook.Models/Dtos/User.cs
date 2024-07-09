@@ -1,4 +1,4 @@
-﻿namespace Cookbook.Api.Models
+﻿namespace Cookbook.Models.Dtos
 {
 	public class User
 	{

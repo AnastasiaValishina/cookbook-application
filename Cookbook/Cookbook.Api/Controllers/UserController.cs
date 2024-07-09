@@ -1,5 +1,4 @@
 ﻿using Cookbook.Api.Data;
-using Cookbook.Api.Models;
 using Cookbook.Models.Dtos;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;

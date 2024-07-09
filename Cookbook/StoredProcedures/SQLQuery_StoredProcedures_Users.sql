@@ -14,7 +14,8 @@ BEGIN
                 INSERT INTO CookbookAppSchema.Users(
                     [UserName],
                     [Email]
-                ) VALUES (
+                ) OUTPUT INSERTED.UserId
+                VALUES (
                     @UserName,
                     @Email
                 )

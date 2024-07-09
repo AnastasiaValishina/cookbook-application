@@ -15,12 +15,14 @@ namespace Cookbook.Api.Controllers
 	{
 		private readonly DataContextDapper _dapper;
 		private readonly AuthHelper _authHelper;
+		private readonly StarterHelper _starterHelper;
         private readonly ILogger<AuthController> _logger;
 
         public AuthController(IConfiguration config, ILogger<AuthController> logger)
 		{
 			_dapper = new DataContextDapper(config);
 			_authHelper = new AuthHelper(config);
+			_starterHelper = new StarterHelper(config);
 			_logger = logger;
 		}
 
@@ -28,9 +30,7 @@ namespace Cookbook.Api.Controllers
 		[HttpPost("Register")]
 		public async Task<IActionResult> Register(UserForRegistrationDto userForRegistration)
 		{
-            _logger.LogInformation("Register called");
-
-            if (userForRegistration.Password == userForRegistration.PasswordConfirm)
+             if (userForRegistration.Password == userForRegistration.PasswordConfirm)
 			{
 				string sqlCheckUserExists = "EXEC CookbookAppSchema.spEmailExists_Get @Email = @EmailParameter";
 
@@ -57,8 +57,11 @@ namespace Cookbook.Api.Controllers
 						sqlAddUserParameters.Add("@UserNameParameter", userForRegistration.UserName, DbType.String);
 						sqlAddUserParameters.Add("@EmailParameter", userForRegistration.Email, DbType.String);
 
-						if (await _dapper.ExecuteSqlWithParametersAsync(sqlAddUser, sqlAddUserParameters))
-							return Ok();
+						int createdUserId = await _dapper.ExecuteScalarWithParamsAsync(sqlAddUser, sqlAddUserParameters);
+
+						await _starterHelper.AddStarterRecipes(createdUserId);
+
+						return Ok();						
 
 						throw new Exception("failed to add user!");
 					}
