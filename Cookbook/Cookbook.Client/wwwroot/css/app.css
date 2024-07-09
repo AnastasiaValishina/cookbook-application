@@ -236,3 +236,9 @@ input {
 .custom-form-label {
     font-size: 1.1rem;
 }
+
+.decor-img {
+    position: absolute;
+    bottom: 15px;
+    right: 15px ;
+}

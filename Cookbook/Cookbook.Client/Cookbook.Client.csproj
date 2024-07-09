@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <None Include="wwwroot\Images\phone.png" />
-    <None Include="wwwroot\Images\vegetables.png" />
   </ItemGroup>
 
   <ItemGroup>
