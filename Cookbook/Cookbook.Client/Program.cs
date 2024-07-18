@@ -13,7 +13,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddTransient<AuthHandler>();
 
 builder.Services.AddHttpClient("ServerApi")
-				.ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["API_Prefix"] ?? builder.HostEnvironment.BaseAddress))
+				.ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["ServerUrl"] ?? ""))
 				.AddHttpMessageHandler<AuthHandler>();
 
 builder.Services.AddSingleton<IAuthService, AuthService>();
