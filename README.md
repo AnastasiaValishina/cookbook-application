@@ -8,7 +8,7 @@
   <li><strong>Bootstrap 5</strong>, <strong>HTML5</strong>, and <strong>CSS</strong> for responsive design and styling.</li>
 </ul>
 
-<p>The app is live and accessible <a href="https://cookbookclient20240726115726.azurewebsites.net/">here</a>. Registration is required to start using the app and to save personal recipes.</p>
+<p>The app is hosted in <strong>Azure</strong> and is live and accessible <a href="https://cookbookclient20240726115726.azurewebsites.net/">here</a>. Registration is required to start using the app and to save personal recipes.</p>
 
 ## Welcome page
 ![image](https://github.com/user-attachments/assets/7dd54792-74c1-47e6-834d-0c37b55cf370)
