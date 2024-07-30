@@ -9,4 +9,4 @@
 </ul>
 
 <p>The app is live and accessible <a href="https://cookbookclient20240726115726.azurewebsites.net/">here</a>. Registration is required to start using the app and to save personal recipes.</p>
-![image](https://github.com/user-attachments/assets/706f3881-6ff9-45a9-bff6-2714db49d3a7)
+![image](https://github.com/user-attachments/assets/6ee1ccdf-ebeb-4382-a476-d91cae77b429)
